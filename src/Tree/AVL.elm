@@ -1,4 +1,17 @@
-module Tree.AVL exposing (..)
+module Tree.AVL
+    exposing
+        ( Tree(Node, Empty, Singleton)
+        , singleton
+        , empty
+        , update
+        , get
+        , foldl
+        , foldr
+        , size
+        , fromList
+        , filter
+        , heightDiff
+        )
 
 
 type Tree k v
@@ -416,7 +429,7 @@ fromList =
 -}
 size : Tree k v -> Int
 size =
-    foldl (\k v -> (+) 1) 0
+    foldl (\_ _ -> (+) 1) 0
 
 
 {-| Keep a key-value pair when it satisfies a predicate.

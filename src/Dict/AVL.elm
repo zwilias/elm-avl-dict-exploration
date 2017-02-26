@@ -96,7 +96,7 @@ member key dict =
 -}
 size : Dict k v -> Int
 size (Dict tree) =
-    Tree.foldl (\k v -> (+) 1) 0 tree
+    Tree.foldl (always <| always <| (+) 1) 0 tree
 
 
 {-| Determine if a dictionary is empty.
@@ -126,7 +126,11 @@ remove key (Dict tree) =
 
 {-| Update the value of a dictionary for a specific key with a given function.
 -}
-update : comparable -> (Maybe v -> Maybe v) -> Dict comparable v -> Dict comparable v
+update :
+    comparable
+    -> (Maybe v -> Maybe v)
+    -> Dict comparable v
+    -> Dict comparable v
 update k alter (Dict tree) =
     Dict <| Tree.update k alter tree
 
@@ -147,7 +151,7 @@ to the first dictionary.
 -}
 union : Dict comparable v -> Dict comparable v -> Dict comparable v
 union left right =
-    foldl (insert) right left
+    foldl insert right left
 
 
 {-| Keep a key-value pair when its key appears in the second dictionary.
@@ -155,14 +159,14 @@ Preference is given to values in the first dictionary.
 -}
 intersect : Dict comparable v -> Dict comparable v -> Dict comparable v
 intersect t1 t2 =
-    filter (\k v -> member k t2) t1
+    filter (\k _ -> member k t2) t1
 
 
 {-| Keep a key-value pair when its key does not appear in the second dictionary.
 -}
 diff : Dict comparable v -> Dict comparable v -> Dict comparable v
 diff t1 t2 =
-    filter (\k v -> not <| member k t2) t1
+    filter (\k _ -> not <| member k t2) t1
 
 
 {-| The most general way of combining two dictionaries. You provide three
@@ -192,7 +196,10 @@ merge leftStep bothStep rightStep leftDict rightDict initialResult =
 
                 ( lKey, lValue ) :: rest ->
                     if lKey < rKey then
-                        stepState rKey rValue ( rest, leftStep lKey lValue result )
+                        stepState
+                            rKey
+                            rValue
+                            ( rest, leftStep lKey lValue result )
                     else if lKey > rKey then
                         ( list, rightStep rKey rValue result )
                     else
@@ -251,7 +258,10 @@ filter predicate =
 contains all key-value pairs which satisfy the predicate, and the second
 contains the rest.
 -}
-partition : (comparable -> v -> Bool) -> Dict comparable v -> ( Dict comparable v, Dict comparable v )
+partition :
+    (comparable -> v -> Bool)
+    -> Dict comparable v
+    -> ( Dict comparable v, Dict comparable v )
 partition predicate =
     foldl
         (\k v ->
@@ -273,7 +283,7 @@ partition predicate =
 -}
 keys : Dict comparable v -> List comparable
 keys dict =
-    foldr (\key value keyList -> key :: keyList) [] dict
+    foldr (\key _ keyList -> key :: keyList) [] dict
 
 
 {-| Get all of the values in a dictionary, in the order of their keys.
@@ -282,7 +292,7 @@ keys dict =
 -}
 values : Dict comparable v -> List v
 values dict =
-    foldr (\key value valueList -> value :: valueList) [] dict
+    foldr (always (::)) [] dict
 
 
 {-| Convert a dictionary into an association list of key-value pairs, sorted by keys.
