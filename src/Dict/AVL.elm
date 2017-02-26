@@ -25,7 +25,15 @@ module Dict.AVL
         , fromList
         )
 
-{-| A dictionary mapping unique keys to values. The keys can be any comparable
+{-| Dict.AVL is an alternative Dict implementation backed by an AVL tree rather
+than a red black tree. It offers generally better performance across the board.
+
+Since its API is exactly the same as that of core's Dict, it can be used as a
+drop-in replacement.
+
+---
+
+A dictionary mapping unique keys to values. The keys can be any comparable
 type. This includes `Int`, `Float`, `Time`, `Char`, `String`, and tuples or
 lists of comparable types.
 
