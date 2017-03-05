@@ -10,6 +10,9 @@ env:
 cache:
   directories:
     - sysconfcpus
+    - elm-stuff
+    - tests/elm-stuff
+    - benchmarks/elm-stuff
 
 install:
   # Travis exposes a few more CPUs (like... 14 more) than the code can actually
