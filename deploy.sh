@@ -6,8 +6,8 @@ SOURCE_BRANCH="master"
 TARGET_BRANCH="gh-pages"
 
 function doCompile {
-  elm package install --yes && 
-    elm make --output benchmarks/main.js benchmarks/Main.elm &&
+  (cd benchmarks && elm package install --yes &&
+    elm make --output main.js Main.elm) &&
     cp benchmarks/{index.html,main.js,benchmarks.css,heart.svg} out/
 }
 
