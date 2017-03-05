@@ -1,0 +1,35 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="benchmarks.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+
+    <!-- PlatformJS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/platform/1.3.3/platform.min.js" integrity="sha256-q5waIQ42WlopVN4oM43ZOYm/aRl6Uk45wHe3AXrscrQ=" crossorigin="anonymous"></script>
+</head>
+<body>
+    <div id="loader">
+        <img src="heart.svg">
+        <h1>Building benchmarks...</h1>
+    </div>
+
+<script src="/main.js"  charset="utf-8"></script>
+<script>
+    while (document.body.firstChild) {
+        document.body.removeChild(document.body.firstChild);
+    }
+
+    Elm.Main.fullscreen({
+        name: platform.name,
+        version: platform.version,
+        os: platform.os.family,
+        osVersion: platform.os.version
+    });
+</script>
+</body>
+</html>
