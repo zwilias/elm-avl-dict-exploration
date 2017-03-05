@@ -6,7 +6,9 @@
     "source-directories": [
         "src"
     ],
-    "exposed-modules": ["Dict.AVL"],
+    "exposed-modules": [
+        "Dict.AVL"
+    ],
     "dependencies": {
         "elm-lang/core": "5.1.1 <= v < 6.0.0"
     },

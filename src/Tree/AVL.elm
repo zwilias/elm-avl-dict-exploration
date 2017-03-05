@@ -1,6 +1,6 @@
 module Tree.AVL
     exposing
-        ( Tree(Node, Empty, Singleton)
+        ( Tree(Node, Empty)
         , singleton
         , empty
         , update
@@ -16,7 +16,6 @@ module Tree.AVL
 
 type Tree k v
     = Node Int k v (Tree k v) (Tree k v)
-    | Singleton k v
     | Empty
 
 
@@ -26,7 +25,7 @@ type Tree k v
 
 singleton : k -> v -> Tree k v
 singleton key val =
-    Singleton key val
+    Node 1 key val empty empty
 
 
 empty : Tree k v
@@ -43,6 +42,7 @@ empty =
 type Flag comparable v
     = NeedRebalance (Tree comparable v)
     | NoNeed (Tree comparable v)
+    | NoOp
 
 
 update :
@@ -57,9 +57,6 @@ update key alter tree =
             case tree of
                 Empty ->
                     Debug.crash "can't"
-
-                Singleton k v ->
-                    ( k, v )
 
                 Node _ k v Empty _ ->
                     ( k, v )
@@ -77,39 +74,10 @@ update key alter tree =
                 Empty ->
                     case alter Nothing of
                         Nothing ->
-                            NoNeed tree
+                            NoOp
 
                         Just value ->
                             singleton key value |> NeedRebalance
-
-                Singleton k v ->
-                    case compare key k of
-                        LT ->
-                            case alter Nothing of
-                                Nothing ->
-                                    NoNeed tree
-
-                                Just value ->
-                                    build k v (singleton key value) empty
-                                        |> NeedRebalance
-
-                        EQ ->
-                            case alter <| Just v of
-                                Nothing ->
-                                    NeedRebalance empty
-
-                                Just value ->
-                                    singleton key value |> NoNeed
-
-                        GT ->
-                            case alter Nothing of
-                                Nothing ->
-                                    NoNeed tree
-
-                                Just value ->
-                                    build k v empty (singleton key value)
-                                        |> balance
-                                        |> NeedRebalance
 
                 Node level k v left right ->
                     case compare key k of
@@ -123,6 +91,9 @@ update key alter tree =
                                     build k v newLeft right
                                         |> balance
                                         |> NeedRebalance
+
+                                NoOp ->
+                                    NoOp
 
                         EQ ->
                             case alter <| Just v of
@@ -163,9 +134,15 @@ update key alter tree =
                                                             |> balance
                                                             |> NeedRebalance
 
+                                                    NoOp ->
+                                                        NoOp
+
                                 Just value ->
-                                    Node level key value left right
-                                        |> NoNeed
+                                    if value == v then
+                                        NoOp
+                                    else
+                                        Node level key value left right
+                                            |> NoNeed
 
                         GT ->
                             case up key alter right of
@@ -177,6 +154,9 @@ update key alter tree =
                                     build k v left newRight
                                         |> balance
                                         |> NeedRebalance
+
+                                NoOp ->
+                                    NoOp
     in
         case up key alter tree of
             NoNeed tree ->
@@ -185,18 +165,15 @@ update key alter tree =
             NeedRebalance tree ->
                 tree
 
+            NoOp ->
+                tree
+
 
 get : comparable -> Tree comparable v -> Maybe v
 get key tree =
     case tree of
         Empty ->
             Nothing
-
-        Singleton head value ->
-            if head == key then
-                Just value
-            else
-                Nothing
 
         Node _ head value left right ->
             case compare key head of
@@ -229,9 +206,6 @@ foldl op acc tree =
         Empty ->
             acc
 
-        Singleton key val ->
-            op key val acc
-
         Node _ key val left right ->
             foldl op acc left
                 |> op key val
@@ -243,9 +217,6 @@ foldr op acc tree =
     case tree of
         Empty ->
             acc
-
-        Singleton key val ->
-            op key val acc
 
         Node _ key val left right ->
             foldr op acc right
@@ -314,9 +285,6 @@ height set =
         Empty ->
             0
 
-        Singleton _ _ ->
-            1
-
         Node height _ _ _ _ ->
             height
 
@@ -326,11 +294,8 @@ height set =
 rotateLeft : Tree k v -> Tree k v
 rotateLeft set =
     case set of
-        Node _ root rootVal less (Node _ pivot pivotVal between greater) ->
+        Node level root rootVal less (Node rLevel pivot pivotVal between greater) ->
             build pivot pivotVal (build root rootVal less between) greater
-
-        Node _ root rootVal less (Singleton pivot pivotVal) ->
-            build pivot pivotVal (build root rootVal less empty) empty
 
         _ ->
             set
@@ -341,11 +306,8 @@ rotateLeft set =
 rotateRight : Tree k v -> Tree k v
 rotateRight set =
     case set of
-        Node _ root rootVal (Node _ pivot pivotVal less between) greater ->
+        Node level root rootVal (Node lLevel pivot pivotVal less between) greater ->
             build pivot pivotVal less (build root rootVal between greater)
-
-        Node _ root rootVal (Singleton pivot pivotVal) greater ->
-            build pivot pivotVal empty (build root rootVal empty greater)
 
         _ ->
             set
@@ -360,9 +322,6 @@ heightDiff : Tree k v -> Int
 heightDiff set =
     case set of
         Empty ->
-            0
-
-        Singleton _ _ ->
             0
 
         Node _ _ _ left right ->
@@ -385,30 +344,33 @@ balance set =
         Empty ->
             set
 
-        Singleton _ _ ->
-            set
-
-        Node _ key value left right ->
+        Node level key value left right ->
             let
                 setDiff =
                     heightDiff set
             in
                 if setDiff == -2 then
                     if heightDiff left == 1 then
-                        -- left leaning tree with right-leaning left subtree. Rotate left, then right.
-                        build key value (rotateLeft left) right |> rotateRight
+                        {- left leaning tree with right-leaning left subtree.
+                           Rotate left, then right.
+                        -}
+                        Node (level) key value (rotateLeft left) right
+                            |> rotateRight
                     else
                         -- left leaning tree, generally. Rotate right.
                         rotateRight set
                 else if setDiff == 2 then
                     if heightDiff right == -1 then
-                        -- right leaning tree with left-leaning right subtree. Rotate right, then left.
-                        build key value left (rotateRight right) |> rotateLeft
+                        {- right leaning tree with left-leaning right subtree.
+                           Rotate right, then left.
+                        -}
+                        Node level key value left (rotateRight right)
+                            |> rotateLeft
                     else
                         -- right leaning tree, generally. Rotate left.
                         rotateLeft set
                 else
-                    -- diff is -1, 0, or 1. Already balanced, no operation required.
+                    -- diff is -1, 0, or 1. Already balanced!
                     set
 
 

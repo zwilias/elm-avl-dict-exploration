@@ -53,9 +53,6 @@ checker0 tree =
         Empty ->
             True
 
-        Singleton _ _ ->
-            True
-
         Tree.Node _ key _ left right ->
             allInTree (\k v -> k < key) left
                 && allInTree (\k v -> k > key) right
@@ -94,10 +91,6 @@ checker1 tree =
     case tree of
         Empty ->
             True
-
-        Singleton _ _ ->
-            (Tree.heightDiff tree |> abs)
-                <= 1
 
         Node _ _ _ left right ->
             (Tree.heightDiff tree |> abs)

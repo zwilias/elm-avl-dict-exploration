@@ -314,4 +314,4 @@ toList dict =
 -}
 fromList : List ( comparable, v ) -> Dict comparable v
 fromList assocs =
-    List.foldl (\( key, value ) dict -> insert key value dict) empty assocs
+    Dict <| Tree.fromList assocs

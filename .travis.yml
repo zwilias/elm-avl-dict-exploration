@@ -34,3 +34,9 @@ install:
 script:
   - $TRAVIS_BUILD_DIR/sysconfcpus/bin/sysconfcpus -n 2 elm make --yes
   - elm-test
+  - bash ./deploy.sh
+
+env:
+  global:
+  - ENCRYPTION_LABEL: "aac98e3186c3"
+  - COMMIT_AUTHOR_EMAIL: "mail@ilias.xyz"
