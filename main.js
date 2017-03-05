@@ -14700,7 +14700,7 @@ var _user$project$Random_Deletion$forValues = F3(
 			A2(_user$project$Random_Deletion$listOfSize, _user$project$Random_Deletion$seed, size));
 		return A3(
 			_BrianHicks$elm_benchmark$Benchmark$compare,
-			A2(_elm_lang$core$Basics_ops['++'], 'remove items of type', name),
+			name,
 			A4(
 				_BrianHicks$elm_benchmark$Benchmark$benchmark2,
 				'Dict',
@@ -14806,16 +14806,16 @@ var _user$project$Random_Insertion$forValues = F3(
 			A2(_user$project$Random_Insertion$listOfSize, _user$project$Random_Insertion$seed, size));
 		return A3(
 			_BrianHicks$elm_benchmark$Benchmark$compare,
-			A2(_elm_lang$core$Basics_ops['++'], 'fromList of ', name),
-			A3(_BrianHicks$elm_benchmark$Benchmark$benchmark1, '|>', _elm_lang$core$Dict$fromList, source),
-			A3(_BrianHicks$elm_benchmark$Benchmark$benchmark1, '(,)', _user$project$Dict_AVL$fromList, source));
+			name,
+			A3(_BrianHicks$elm_benchmark$Benchmark$benchmark1, 'Dict>', _elm_lang$core$Dict$fromList, source),
+			A3(_BrianHicks$elm_benchmark$Benchmark$benchmark1, 'Dict.AVL', _user$project$Dict_AVL$fromList, source));
 	});
 var _user$project$Random_Insertion$suiteOfSize = function (size) {
 	return A2(
 		_BrianHicks$elm_benchmark$Benchmark$describe,
 		A2(
 			_elm_lang$core$Basics_ops['++'],
-			'Random insertion of size ',
+			'random insertion of size ',
 			_elm_lang$core$Basics$toString(size)),
 		{
 			ctor: '::',
@@ -14894,7 +14894,7 @@ var _user$project$Serial_Deletion$forValues = F3(
 			keys);
 		return A3(
 			_BrianHicks$elm_benchmark$Benchmark$compare,
-			A2(_elm_lang$core$Basics_ops['++'], 'removal of ', name),
+			name,
 			A4(
 				_BrianHicks$elm_benchmark$Benchmark$benchmark2,
 				'Dict',
@@ -15076,7 +15076,7 @@ var _user$project$Serial_Retrieval$forValues = F3(
 			keys);
 		return A3(
 			_BrianHicks$elm_benchmark$Benchmark$compare,
-			A2(_elm_lang$core$Basics_ops['++'], 'retrieve items of type ', name),
+			name,
 			A4(
 				_BrianHicks$elm_benchmark$Benchmark$benchmark2,
 				'Dict',
