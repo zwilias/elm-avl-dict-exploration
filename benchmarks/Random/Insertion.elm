@@ -27,15 +27,15 @@ forValues name size keyer =
                 (flip (,) ())
                 (listOfSize seed size)
     in
-        Benchmark.compare ("fromList of " ++ name)
-            (Benchmark.benchmark1 "|>" Dict.fromList source)
-            (Benchmark.benchmark1 "(,)" AvlDict.fromList source)
+        Benchmark.compare name
+            (Benchmark.benchmark1 "Dict>" Dict.fromList source)
+            (Benchmark.benchmark1 "Dict.AVL" AvlDict.fromList source)
 
 
 suiteOfSize : Int -> Benchmark
 suiteOfSize size =
     describe
-        ("Random insertion of size " ++ toString size)
+        ("random insertion of size " ++ toString size)
         [ forValues "string" size toString
         , forValues "int" size identity
         , forValues "float" size toFloat

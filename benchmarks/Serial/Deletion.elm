@@ -19,7 +19,7 @@ forValues name size keyer =
             List.range 1 size
                 |> List.map keyer
     in
-        Benchmark.compare ("removal of " ++ name)
+        Benchmark.compare name
             (Benchmark.benchmark2 "Dict" (List.foldl Dict.remove) (Dict.fromList source) keys)
             (Benchmark.benchmark2 "Dict.AVL" (List.foldl AvlDict.remove) (AvlDict.fromList source) keys)
 

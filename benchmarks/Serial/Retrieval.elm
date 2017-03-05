@@ -19,7 +19,7 @@ forValues name size keyer =
                 (flip (,) ())
                 keys
     in
-        Benchmark.compare ("retrieve items of type " ++ name)
+        Benchmark.compare name
             (Benchmark.benchmark2 "Dict"
                 (\list dict -> List.map (\x -> Dict.get x dict) list)
                 (keys)

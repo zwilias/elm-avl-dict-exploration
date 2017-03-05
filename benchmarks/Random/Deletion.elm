@@ -32,7 +32,7 @@ forValues name size keyer =
                 keyer
                 (listOfSize otherSeed size)
     in
-        Benchmark.compare ("remove items of type" ++ name)
+        Benchmark.compare name
             (Benchmark.benchmark2 "Dict" (List.foldl Dict.remove) (Dict.fromList source) (toRemove))
             (Benchmark.benchmark2 "Dict.AVL" (List.foldl AvlDict.remove) (AvlDict.fromList source) (toRemove))
 
