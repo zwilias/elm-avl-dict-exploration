@@ -15290,8 +15290,7 @@ var _user$project$Main$encodeSubmission = F2(
 						_0: {
 							ctor: '_Tuple2',
 							_0: 'size',
-							_1: _elm_lang$core$Json_Encode$string(
-								_elm_lang$core$Basics$toString(descriptor.size))
+							_1: _elm_lang$core$Json_Encode$int(descriptor.size)
 						},
 						_1: {
 							ctor: '::',
