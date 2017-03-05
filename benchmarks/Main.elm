@@ -299,7 +299,7 @@ encodeSubmission browserInfo descriptor =
     Encode.object
         [ ( "browserInfo", encodeBrowserInfo browserInfo )
         , ( "type", Encode.string descriptor.name )
-        , ( "size", Encode.string <| toString descriptor.size )
+        , ( "size", Encode.int descriptor.size )
         , ( "benchmark", encoder <| fromBenchmark descriptor.benchmark )
         ]
 
