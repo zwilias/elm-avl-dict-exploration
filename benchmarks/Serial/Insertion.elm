@@ -23,7 +23,7 @@ forValues name size keyer =
 suiteOfSize : Int -> Benchmark
 suiteOfSize size =
     describe
-        ("serial insertion of size " ++ (toString size))
+        (toString size)
         [ forValues "string" size toString
         , forValues "int" size identity
         , forValues "float" size toFloat

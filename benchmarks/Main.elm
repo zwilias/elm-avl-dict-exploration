@@ -265,7 +265,7 @@ submitBench : BrowserInfo -> BenchmarkDescriptor -> Cmd Msg
 submitBench browserInfo descriptor =
     let
         body =
-            encodeSubmission browserInfo descriptor.benchmark
+            encodeSubmission browserInfo descriptor
                 |> Http.jsonBody
     in
         Http.post
@@ -294,11 +294,13 @@ encodeBrowserInfo browserInfo =
         ]
 
 
-encodeSubmission : BrowserInfo -> Benchmark -> Encode.Value
-encodeSubmission browserInfo benchmark =
+encodeSubmission : BrowserInfo -> BenchmarkDescriptor -> Encode.Value
+encodeSubmission browserInfo descriptor =
     Encode.object
         [ ( "browserInfo", encodeBrowserInfo browserInfo )
-        , ( "benchmark", encoder <| fromBenchmark benchmark )
+        , ( "type", Encode.string descriptor.name )
+        , ( "size", Encode.string <| toString descriptor.size )
+        , ( "benchmark", encoder <| fromBenchmark descriptor.benchmark )
         ]
 
 
