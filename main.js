@@ -14717,10 +14717,7 @@ var _user$project$Random_Deletion$forValues = F3(
 var _user$project$Random_Deletion$suiteOfSize = function (size) {
 	return A2(
 		_BrianHicks$elm_benchmark$Benchmark$describe,
-		A2(
-			_elm_lang$core$Basics_ops['++'],
-			'random deletion of size ',
-			_elm_lang$core$Basics$toString(size)),
+		_elm_lang$core$Basics$toString(size),
 		{
 			ctor: '::',
 			_0: A3(_user$project$Random_Deletion$forValues, 'string', size, _elm_lang$core$Basics$toString),
@@ -14813,10 +14810,7 @@ var _user$project$Random_Insertion$forValues = F3(
 var _user$project$Random_Insertion$suiteOfSize = function (size) {
 	return A2(
 		_BrianHicks$elm_benchmark$Benchmark$describe,
-		A2(
-			_elm_lang$core$Basics_ops['++'],
-			'random insertion of size ',
-			_elm_lang$core$Basics$toString(size)),
+		_elm_lang$core$Basics$toString(size),
 		{
 			ctor: '::',
 			_0: A3(_user$project$Random_Insertion$forValues, 'string', size, _elm_lang$core$Basics$toString),
@@ -14911,10 +14905,7 @@ var _user$project$Serial_Deletion$forValues = F3(
 var _user$project$Serial_Deletion$suiteOfSize = function (size) {
 	return A2(
 		_BrianHicks$elm_benchmark$Benchmark$describe,
-		A2(
-			_elm_lang$core$Basics_ops['++'],
-			'serial deletion of size ',
-			_elm_lang$core$Basics$toString(size)),
+		_elm_lang$core$Basics$toString(size),
 		{
 			ctor: '::',
 			_0: A3(_user$project$Serial_Deletion$forValues, 'string', size, _elm_lang$core$Basics$toString),
@@ -14995,10 +14986,7 @@ var _user$project$Serial_Insertion$forValues = F3(
 var _user$project$Serial_Insertion$suiteOfSize = function (size) {
 	return A2(
 		_BrianHicks$elm_benchmark$Benchmark$describe,
-		A2(
-			_elm_lang$core$Basics_ops['++'],
-			'serial insertion of size ',
-			_elm_lang$core$Basics$toString(size)),
+		_elm_lang$core$Basics$toString(size),
 		{
 			ctor: '::',
 			_0: A3(_user$project$Serial_Insertion$forValues, 'string', size, _elm_lang$core$Basics$toString),
@@ -15109,10 +15097,7 @@ var _user$project$Serial_Retrieval$forValues = F3(
 var _user$project$Serial_Retrieval$suiteOfSize = function (size) {
 	return A2(
 		_BrianHicks$elm_benchmark$Benchmark$describe,
-		A2(
-			_elm_lang$core$Basics_ops['++'],
-			'serial retrieval of size ',
-			_elm_lang$core$Basics$toString(size)),
+		_elm_lang$core$Basics$toString(size),
 		{
 			ctor: '::',
 			_0: A3(_user$project$Serial_Retrieval$forValues, 'string', size, _elm_lang$core$Basics$toString),
@@ -15284,7 +15269,7 @@ var _user$project$Main$encodeBrowserInfo = function (browserInfo) {
 		});
 };
 var _user$project$Main$encodeSubmission = F2(
-	function (browserInfo, benchmark) {
+	function (browserInfo, descriptor) {
 		return _elm_lang$core$Json_Encode$object(
 			{
 				ctor: '::',
@@ -15297,11 +15282,28 @@ var _user$project$Main$encodeSubmission = F2(
 					ctor: '::',
 					_0: {
 						ctor: '_Tuple2',
-						_0: 'benchmark',
-						_1: _BrianHicks$elm_benchmark$Benchmark_Reporting$encoder(
-							_BrianHicks$elm_benchmark$Benchmark_Reporting$fromBenchmark(benchmark))
+						_0: 'type',
+						_1: _elm_lang$core$Json_Encode$string(descriptor.name)
 					},
-					_1: {ctor: '[]'}
+					_1: {
+						ctor: '::',
+						_0: {
+							ctor: '_Tuple2',
+							_0: 'size',
+							_1: _elm_lang$core$Json_Encode$string(
+								_elm_lang$core$Basics$toString(descriptor.size))
+						},
+						_1: {
+							ctor: '::',
+							_0: {
+								ctor: '_Tuple2',
+								_0: 'benchmark',
+								_1: _BrianHicks$elm_benchmark$Benchmark_Reporting$encoder(
+									_BrianHicks$elm_benchmark$Benchmark_Reporting$fromBenchmark(descriptor.benchmark))
+							},
+							_1: {ctor: '[]'}
+						}
+					}
 				}
 			});
 	});
@@ -15572,7 +15574,7 @@ var _user$project$Main$SubmissionResult = function (a) {
 var _user$project$Main$submitBench = F2(
 	function (browserInfo, descriptor) {
 		var body = _elm_lang$http$Http$jsonBody(
-			A2(_user$project$Main$encodeSubmission, browserInfo, descriptor.benchmark));
+			A2(_user$project$Main$encodeSubmission, browserInfo, descriptor));
 		return function (request) {
 			return A2(
 				_elm_lang$http$Http$send,
