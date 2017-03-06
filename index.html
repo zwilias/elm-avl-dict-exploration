@@ -25,10 +25,13 @@
     }
 
     Elm.Main.fullscreen({
-        name: platform.name,
-        version: platform.version,
-        os: platform.os.family,
-        osVersion: platform.os.version
+        browserInfo: {
+            name: platform.name,
+            version: platform.version,
+            os: platform.os.family,
+            osVersion: platform.os.version
+        },
+        seed: Math.floor(Math.random() * Number.MAX_SAFE_INTEGER)
     });
 </script>
 </body>

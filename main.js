@@ -15157,6 +15157,55 @@ var _user$project$Serial_Retrieval$suiteOfSize = function (size) {
 		});
 };
 
+var _user$project$Shuffle$helper = function (_p0) {
+	var _p1 = _p0;
+	var _p2 = _p1._1;
+	return A2(
+		_mgold$elm_random_pcg$Random_Pcg$map,
+		function (idx) {
+			var after = A2(_elm_lang$core$List$drop, idx, _p2);
+			var self = A2(
+				_elm_lang$core$List$take,
+				1,
+				A2(_elm_lang$core$List$drop, idx - 1, _p2));
+			var before = A2(_elm_lang$core$List$take, idx - 1, _p2);
+			return {
+				ctor: '_Tuple2',
+				_0: A2(_elm_lang$core$Basics_ops['++'], _p1._0, self),
+				_1: A2(_elm_lang$core$Basics_ops['++'], before, after)
+			};
+		},
+		A2(
+			_mgold$elm_random_pcg$Random_Pcg$int,
+			1,
+			_elm_lang$core$List$length(_p2)));
+};
+var _user$project$Shuffle$shuffle = function (aList) {
+	var shuffleHelper = function (lists) {
+		return A2(
+			_mgold$elm_random_pcg$Random_Pcg$andThen,
+			function (_p3) {
+				var _p4 = _p3;
+				var _p7 = _p4._1;
+				var _p6 = _p4._0;
+				var _p5 = _p7;
+				if (_p5.ctor === '[]') {
+					return _mgold$elm_random_pcg$Random_Pcg$constant(_p6);
+				} else {
+					return shuffleHelper(
+						{ctor: '_Tuple2', _0: _p6, _1: _p7});
+				}
+			},
+			_user$project$Shuffle$helper(lists));
+	};
+	return shuffleHelper(
+		{
+			ctor: '_Tuple2',
+			_0: {ctor: '[]'},
+			_1: aList
+		});
+};
+
 var _user$project$Main$descriptorToString = function (benchmarkDescriptor) {
 	return A2(
 		_elm_lang$core$Basics_ops['++'],
@@ -15192,7 +15241,7 @@ var _user$project$Main$renderNext = function (benchmarkDescriptorList) {
 									{ctor: '[]'},
 									{
 										ctor: '::',
-										_0: _elm_lang$html$Html$text('Alright, so I still need to run these benchmarks:'),
+										_0: _elm_lang$html$Html$text('Alright, so I still need to run some benchmarks. They\'re shuffled, so that - even if people \"accidently\" close their tab and stop mid-benchmark, I still get a fair sample, over time.'),
 										_1: {
 											ctor: '::',
 											_0: A2(
@@ -15428,6 +15477,10 @@ var _user$project$Main$BenchmarkDescriptor = F3(
 	function (a, b, c) {
 		return {name: a, size: b, benchmark: c};
 	});
+var _user$project$Main$Flags = F2(
+	function (a, b) {
+		return {browserInfo: a, seed: b};
+	});
 var _user$project$Main$Submission = F4(
 	function (a, b, c, d) {
 		return {description: a, tries: b, request: c, result: d};
@@ -15439,13 +15492,19 @@ var _user$project$Main$BrowserInfo = F4(
 var _user$project$Main$Finished = {ctor: 'Finished'};
 var _user$project$Main$InProgress = {ctor: 'InProgress'};
 var _user$project$Main$Prepare = {ctor: 'Prepare'};
-var _user$project$Main$init = function (browserInfo) {
+var _user$project$Main$init = function (flags) {
+	var initialSeed = _mgold$elm_random_pcg$Random_Pcg$initialSeed(flags.seed);
 	return A2(
 		_elm_lang$core$Platform_Cmd_ops['!'],
 		{
 			currentBenchmark: _elm_lang$core$Maybe$Nothing,
-			browserInfo: browserInfo,
-			toRun: _user$project$Main$allBenches,
+			browserInfo: flags.browserInfo,
+			toRun: _elm_lang$core$Tuple$first(
+				A3(
+					_elm_lang$core$Basics$flip,
+					_mgold$elm_random_pcg$Random_Pcg$step,
+					initialSeed,
+					_user$project$Shuffle$shuffle(_user$project$Main$allBenches))),
 			runPhase: _user$project$Main$Prepare,
 			failedRequests: {ctor: '[]'}
 		},
@@ -16403,26 +16462,40 @@ var _user$project$Main$main = _elm_lang$html$Html$programWithFlags(
 	})(
 	A2(
 		_elm_lang$core$Json_Decode$andThen,
-		function (name) {
+		function (browserInfo) {
 			return A2(
 				_elm_lang$core$Json_Decode$andThen,
-				function (os) {
+				function (seed) {
+					return _elm_lang$core$Json_Decode$succeed(
+						{browserInfo: browserInfo, seed: seed});
+				},
+				A2(_elm_lang$core$Json_Decode$field, 'seed', _elm_lang$core$Json_Decode$int));
+		},
+		A2(
+			_elm_lang$core$Json_Decode$field,
+			'browserInfo',
+			A2(
+				_elm_lang$core$Json_Decode$andThen,
+				function (name) {
 					return A2(
 						_elm_lang$core$Json_Decode$andThen,
-						function (osVersion) {
+						function (os) {
 							return A2(
 								_elm_lang$core$Json_Decode$andThen,
-								function (version) {
-									return _elm_lang$core$Json_Decode$succeed(
-										{name: name, os: os, osVersion: osVersion, version: version});
+								function (osVersion) {
+									return A2(
+										_elm_lang$core$Json_Decode$andThen,
+										function (version) {
+											return _elm_lang$core$Json_Decode$succeed(
+												{name: name, os: os, osVersion: osVersion, version: version});
+										},
+										A2(_elm_lang$core$Json_Decode$field, 'version', _elm_lang$core$Json_Decode$string));
 								},
-								A2(_elm_lang$core$Json_Decode$field, 'version', _elm_lang$core$Json_Decode$string));
+								A2(_elm_lang$core$Json_Decode$field, 'osVersion', _elm_lang$core$Json_Decode$string));
 						},
-						A2(_elm_lang$core$Json_Decode$field, 'osVersion', _elm_lang$core$Json_Decode$string));
+						A2(_elm_lang$core$Json_Decode$field, 'os', _elm_lang$core$Json_Decode$string));
 				},
-				A2(_elm_lang$core$Json_Decode$field, 'os', _elm_lang$core$Json_Decode$string));
-		},
-		A2(_elm_lang$core$Json_Decode$field, 'name', _elm_lang$core$Json_Decode$string)));
+				A2(_elm_lang$core$Json_Decode$field, 'name', _elm_lang$core$Json_Decode$string)))));
 
 var Elm = {};
 Elm['Main'] = Elm['Main'] || {};
