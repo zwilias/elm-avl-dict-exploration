@@ -32,7 +32,9 @@ import Bootstrap.Button as Button
 import Bootstrap.Progress as Progress
 import Bootstrap.Card as Card
 import Html.Lazy exposing (lazy, lazy2)
+import Random.Pcg as Random exposing (step, initialSeed)
 import Time
+import Shuffle exposing (shuffle)
 
 
 type RunPhase
@@ -118,15 +120,29 @@ allBenches =
                 )
 
 
-init : BrowserInfo -> ( Model, Cmd Msg )
-init browserInfo =
-    { currentBenchmark = Nothing
-    , browserInfo = browserInfo
-    , toRun = allBenches
-    , runPhase = Prepare
-    , failedRequests = []
+type alias Flags =
+    { browserInfo : BrowserInfo
+    , seed : Int
     }
-        ! []
+
+
+init : Flags -> ( Model, Cmd Msg )
+init flags =
+    let
+        initialSeed =
+            Random.initialSeed flags.seed
+    in
+        { currentBenchmark = Nothing
+        , browserInfo = flags.browserInfo
+        , toRun =
+            allBenches
+                |> shuffle
+                |> flip Random.step initialSeed
+                |> Tuple.first
+        , runPhase = Prepare
+        , failedRequests = []
+        }
+            ! []
 
 
 type alias Submission =
@@ -517,7 +533,7 @@ renderNext benchmarkDescriptorList =
 
                     _ ->
                         Html.div []
-                            [ Html.text "Alright, so I still need to run these benchmarks:"
+                            [ Html.text "Alright, so I still need to run some benchmarks. They're shuffled, so that - even if people \"accidently\" close their tab and stop mid-benchmark, I still get a fair sample, over time."
                             , Html.ul
                                 [ A.style [ ( "column-count", "3" ) ] ]
                               <|
@@ -623,7 +639,7 @@ type alias BrowserInfo =
     }
 
 
-main : Program BrowserInfo Model Msg
+main : Program Flags Model Msg
 main =
     Html.programWithFlags
         { init = init
