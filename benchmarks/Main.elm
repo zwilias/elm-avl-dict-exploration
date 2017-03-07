@@ -105,7 +105,7 @@ allBenches =
 
         sizes : List Int
         sizes =
-            [ 0, 1, 10, 100, 1000, 10000 ]
+            [ 1, 10, 100, 1000, 10000 ]
     in
         applyList
             (Dict.toList benchFactories |> List.map descriptorFactory)
