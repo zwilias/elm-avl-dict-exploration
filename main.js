@@ -11780,13 +11780,21 @@ var _rundis$elm_bootstrap$Bootstrap_Internal_Text$textAlignClass = function (_p1
 	return _elm_lang$html$Html_Attributes$class(
 		A2(
 			_elm_lang$core$Basics_ops['++'],
-			'text-',
+			'text',
 			A2(
 				_elm_lang$core$Basics_ops['++'],
 				A2(
 					_elm_lang$core$Maybe$withDefault,
-					'',
-					_rundis$elm_bootstrap$Bootstrap_Grid_Internal$screenSizeOption(_p2.size)),
+					'-',
+					A2(
+						_elm_lang$core$Maybe$map,
+						function (s) {
+							return A2(
+								_elm_lang$core$Basics_ops['++'],
+								'-',
+								A2(_elm_lang$core$Basics_ops['++'], s, '-'));
+						},
+						_rundis$elm_bootstrap$Bootstrap_Grid_Internal$screenSizeOption(_p2.size))),
 				_rundis$elm_bootstrap$Bootstrap_Internal_Text$textAlignDirOption(_p2.dir))));
 };
 var _rundis$elm_bootstrap$Bootstrap_Internal_Text$HAlign = F2(
@@ -15390,24 +15398,20 @@ var _user$project$Main$applyList = F2(
 var _user$project$Main$allBenches = function () {
 	var sizes = {
 		ctor: '::',
-		_0: 0,
+		_0: 1,
 		_1: {
 			ctor: '::',
-			_0: 1,
+			_0: 10,
 			_1: {
 				ctor: '::',
-				_0: 10,
+				_0: 100,
 				_1: {
 					ctor: '::',
-					_0: 100,
+					_0: 1000,
 					_1: {
 						ctor: '::',
-						_0: 1000,
-						_1: {
-							ctor: '::',
-							_0: 10000,
-							_1: {ctor: '[]'}
-						}
+						_0: 10000,
+						_1: {ctor: '[]'}
 					}
 				}
 			}
