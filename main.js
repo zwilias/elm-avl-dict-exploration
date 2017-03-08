@@ -15493,6 +15493,18 @@ var _user$project$Main$BrowserInfo = F4(
 	function (a, b, c, d) {
 		return {name: a, version: b, os: c, osVersion: d};
 	});
+var _user$project$Main$fromSafeBrowserInfo = function (safeBrowserInfo) {
+	return A4(
+		_user$project$Main$BrowserInfo,
+		A2(_elm_lang$core$Maybe$withDefault, '', safeBrowserInfo.name),
+		A2(_elm_lang$core$Maybe$withDefault, '', safeBrowserInfo.version),
+		A2(_elm_lang$core$Maybe$withDefault, '', safeBrowserInfo.os),
+		A2(_elm_lang$core$Maybe$withDefault, '', safeBrowserInfo.osVersion));
+};
+var _user$project$Main$SafeBrowserInfo = F4(
+	function (a, b, c, d) {
+		return {name: a, version: b, os: c, osVersion: d};
+	});
 var _user$project$Main$Finished = {ctor: 'Finished'};
 var _user$project$Main$InProgress = {ctor: 'InProgress'};
 var _user$project$Main$Prepare = {ctor: 'Prepare'};
@@ -15502,7 +15514,7 @@ var _user$project$Main$init = function (flags) {
 		_elm_lang$core$Platform_Cmd_ops['!'],
 		{
 			currentBenchmark: _elm_lang$core$Maybe$Nothing,
-			browserInfo: flags.browserInfo,
+			browserInfo: _user$project$Main$fromSafeBrowserInfo(flags.browserInfo),
 			toRun: _elm_lang$core$Tuple$first(
 				A3(
 					_elm_lang$core$Basics$flip,
@@ -16493,13 +16505,61 @@ var _user$project$Main$main = _elm_lang$html$Html$programWithFlags(
 											return _elm_lang$core$Json_Decode$succeed(
 												{name: name, os: os, osVersion: osVersion, version: version});
 										},
-										A2(_elm_lang$core$Json_Decode$field, 'version', _elm_lang$core$Json_Decode$string));
+										A2(
+											_elm_lang$core$Json_Decode$field,
+											'version',
+											_elm_lang$core$Json_Decode$oneOf(
+												{
+													ctor: '::',
+													_0: _elm_lang$core$Json_Decode$null(_elm_lang$core$Maybe$Nothing),
+													_1: {
+														ctor: '::',
+														_0: A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Maybe$Just, _elm_lang$core$Json_Decode$string),
+														_1: {ctor: '[]'}
+													}
+												})));
 								},
-								A2(_elm_lang$core$Json_Decode$field, 'osVersion', _elm_lang$core$Json_Decode$string));
+								A2(
+									_elm_lang$core$Json_Decode$field,
+									'osVersion',
+									_elm_lang$core$Json_Decode$oneOf(
+										{
+											ctor: '::',
+											_0: _elm_lang$core$Json_Decode$null(_elm_lang$core$Maybe$Nothing),
+											_1: {
+												ctor: '::',
+												_0: A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Maybe$Just, _elm_lang$core$Json_Decode$string),
+												_1: {ctor: '[]'}
+											}
+										})));
 						},
-						A2(_elm_lang$core$Json_Decode$field, 'os', _elm_lang$core$Json_Decode$string));
+						A2(
+							_elm_lang$core$Json_Decode$field,
+							'os',
+							_elm_lang$core$Json_Decode$oneOf(
+								{
+									ctor: '::',
+									_0: _elm_lang$core$Json_Decode$null(_elm_lang$core$Maybe$Nothing),
+									_1: {
+										ctor: '::',
+										_0: A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Maybe$Just, _elm_lang$core$Json_Decode$string),
+										_1: {ctor: '[]'}
+									}
+								})));
 				},
-				A2(_elm_lang$core$Json_Decode$field, 'name', _elm_lang$core$Json_Decode$string)))));
+				A2(
+					_elm_lang$core$Json_Decode$field,
+					'name',
+					_elm_lang$core$Json_Decode$oneOf(
+						{
+							ctor: '::',
+							_0: _elm_lang$core$Json_Decode$null(_elm_lang$core$Maybe$Nothing),
+							_1: {
+								ctor: '::',
+								_0: A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Maybe$Just, _elm_lang$core$Json_Decode$string),
+								_1: {ctor: '[]'}
+							}
+						}))))));
 
 var Elm = {};
 Elm['Main'] = Elm['Main'] || {};
