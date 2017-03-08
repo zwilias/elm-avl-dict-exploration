@@ -14197,84 +14197,73 @@ var _user$project$Tree_AVL$singleton = F2(
 	});
 var _user$project$Tree_AVL$build = F4(
 	function (key, value, left, right) {
-		var _p8 = {ctor: '_Tuple2', _0: left, _1: right};
-		if ((_p8._0.ctor === 'Empty') && (_p8._1.ctor === 'Empty')) {
-			return A2(_user$project$Tree_AVL$singleton, key, value);
-		} else {
-			return A5(
-				_user$project$Tree_AVL$Node,
-				A2(
-					F2(
-						function (x, y) {
-							return x + y;
-						}),
-					1,
-					A2(
-						_elm_lang$core$Basics$max,
-						_user$project$Tree_AVL$height(left),
-						_user$project$Tree_AVL$height(right))),
-				key,
-				value,
-				left,
-				right);
-		}
+		return A5(
+			_user$project$Tree_AVL$Node,
+			A2(
+				_elm_lang$core$Basics$max,
+				_user$project$Tree_AVL$height(left),
+				_user$project$Tree_AVL$height(right)) + 1,
+			key,
+			value,
+			left,
+			right);
 	});
 var _user$project$Tree_AVL$rotateLeft = function (set) {
-	var _p9 = set;
-	if ((_p9.ctor === 'Node') && (_p9._4.ctor === 'Node')) {
+	var _p8 = set;
+	if ((_p8.ctor === 'Node') && (_p8._4.ctor === 'Node')) {
 		return A4(
 			_user$project$Tree_AVL$build,
-			_p9._4._1,
-			_p9._4._2,
-			A4(_user$project$Tree_AVL$build, _p9._1, _p9._2, _p9._3, _p9._4._3),
-			_p9._4._4);
+			_p8._4._1,
+			_p8._4._2,
+			A4(_user$project$Tree_AVL$build, _p8._1, _p8._2, _p8._3, _p8._4._3),
+			_p8._4._4);
 	} else {
 		return set;
 	}
 };
 var _user$project$Tree_AVL$rotateRight = function (set) {
-	var _p10 = set;
-	if ((_p10.ctor === 'Node') && (_p10._3.ctor === 'Node')) {
+	var _p9 = set;
+	if ((_p9.ctor === 'Node') && (_p9._3.ctor === 'Node')) {
 		return A4(
 			_user$project$Tree_AVL$build,
-			_p10._3._1,
-			_p10._3._2,
-			_p10._3._3,
-			A4(_user$project$Tree_AVL$build, _p10._1, _p10._2, _p10._3._4, _p10._4));
+			_p9._3._1,
+			_p9._3._2,
+			_p9._3._3,
+			A4(_user$project$Tree_AVL$build, _p9._1, _p9._2, _p9._3._4, _p9._4));
 	} else {
 		return set;
 	}
 };
 var _user$project$Tree_AVL$balance = function (set) {
-	var _p11 = set;
-	if (_p11.ctor === 'Empty') {
+	var _p10 = set;
+	if (_p10.ctor === 'Empty') {
 		return set;
 	} else {
-		var _p16 = _p11._2;
-		var _p15 = _p11._4;
-		var _p14 = _p11._0;
-		var _p13 = _p11._3;
-		var _p12 = _p11._1;
+		var _p15 = _p10._2;
+		var _p14 = _p10._4;
+		var _p13 = _p10._0;
+		var _p12 = _p10._3;
+		var _p11 = _p10._1;
 		var setDiff = _user$project$Tree_AVL$heightDiff(set);
 		return _elm_lang$core$Native_Utils.eq(setDiff, -2) ? (_elm_lang$core$Native_Utils.eq(
-			_user$project$Tree_AVL$heightDiff(_p13),
+			_user$project$Tree_AVL$heightDiff(_p12),
 			1) ? _user$project$Tree_AVL$rotateRight(
 			A5(
 				_user$project$Tree_AVL$Node,
-				_p14,
-				_p12,
-				_p16,
-				_user$project$Tree_AVL$rotateLeft(_p13),
-				_p15)) : _user$project$Tree_AVL$rotateRight(set)) : (_elm_lang$core$Native_Utils.eq(setDiff, 2) ? (_elm_lang$core$Native_Utils.eq(
-			_user$project$Tree_AVL$heightDiff(_p15),
+				_p13,
+				_p11,
+				_p15,
+				_user$project$Tree_AVL$rotateLeft(_p12),
+				_p14)) : _user$project$Tree_AVL$rotateRight(set)) : (_elm_lang$core$Native_Utils.eq(setDiff, 2) ? (_elm_lang$core$Native_Utils.eq(
+			_user$project$Tree_AVL$heightDiff(_p14),
 			-1) ? _user$project$Tree_AVL$rotateLeft(
 			A5(
 				_user$project$Tree_AVL$Node,
-				_p14,
-				_p12,
-				_p16,
 				_p13,
-				_user$project$Tree_AVL$rotateRight(_p15))) : _user$project$Tree_AVL$rotateLeft(set)) : set);
+				_p11,
+				_p15,
+				_p12,
+				_user$project$Tree_AVL$rotateRight(_p14))) : _user$project$Tree_AVL$rotateLeft(set)) : set);
 	}
 };
 var _user$project$Tree_AVL$NoOp = {ctor: 'NoOp'};
@@ -14289,21 +14278,21 @@ var _user$project$Tree_AVL$update = F3(
 		var getSmallest = function (tree) {
 			getSmallest:
 			while (true) {
-				var _p17 = tree;
-				if (_p17.ctor === 'Empty') {
+				var _p16 = tree;
+				if (_p16.ctor === 'Empty') {
 					return _elm_lang$core$Native_Utils.crashCase(
 						'Tree.AVL',
 						{
 							start: {line: 57, column: 13},
 							end: {line: 65, column: 37}
 						},
-						_p17)('can\'t');
+						_p16)('can\'t');
 				} else {
-					if (_p17._3.ctor === 'Empty') {
-						return {ctor: '_Tuple2', _0: _p17._1, _1: _p17._2};
+					if (_p16._3.ctor === 'Empty') {
+						return {ctor: '_Tuple2', _0: _p16._1, _1: _p16._2};
 					} else {
-						var _v15 = _p17._3;
-						tree = _v15;
+						var _v14 = _p16._3;
+						tree = _v14;
 						continue getSmallest;
 					}
 				}
@@ -14311,96 +14300,96 @@ var _user$project$Tree_AVL$update = F3(
 		};
 		var up = F3(
 			function (key, alter, tree) {
-				var _p19 = tree;
-				if (_p19.ctor === 'Empty') {
-					var _p20 = alter(_elm_lang$core$Maybe$Nothing);
-					if (_p20.ctor === 'Nothing') {
+				var _p18 = tree;
+				if (_p18.ctor === 'Empty') {
+					var _p19 = alter(_elm_lang$core$Maybe$Nothing);
+					if (_p19.ctor === 'Nothing') {
 						return _user$project$Tree_AVL$NoOp;
 					} else {
 						return _user$project$Tree_AVL$NeedRebalance(
-							A2(_user$project$Tree_AVL$singleton, key, _p20._0));
+							A2(_user$project$Tree_AVL$singleton, key, _p19._0));
 					}
 				} else {
-					var _p33 = _p19._2;
-					var _p32 = _p19._4;
-					var _p31 = _p19._0;
-					var _p30 = _p19._3;
-					var _p29 = _p19._1;
-					var _p21 = A2(_elm_lang$core$Basics$compare, key, _p29);
-					switch (_p21.ctor) {
+					var _p32 = _p18._2;
+					var _p31 = _p18._4;
+					var _p30 = _p18._0;
+					var _p29 = _p18._3;
+					var _p28 = _p18._1;
+					var _p20 = A2(_elm_lang$core$Basics$compare, key, _p28);
+					switch (_p20.ctor) {
 						case 'LT':
-							var _p22 = A3(up, key, alter, _p30);
-							switch (_p22.ctor) {
+							var _p21 = A3(up, key, alter, _p29);
+							switch (_p21.ctor) {
 								case 'NoNeed':
 									return _user$project$Tree_AVL$NoNeed(
-										A5(_user$project$Tree_AVL$Node, _p31, _p29, _p33, _p22._0, _p32));
+										A5(_user$project$Tree_AVL$Node, _p30, _p28, _p32, _p21._0, _p31));
 								case 'NeedRebalance':
 									return _user$project$Tree_AVL$NeedRebalance(
 										_user$project$Tree_AVL$balance(
-											A4(_user$project$Tree_AVL$build, _p29, _p33, _p22._0, _p32)));
+											A4(_user$project$Tree_AVL$build, _p28, _p32, _p21._0, _p31)));
 								default:
 									return _user$project$Tree_AVL$NoOp;
 							}
 						case 'EQ':
-							var _p23 = alter(
-								_elm_lang$core$Maybe$Just(_p33));
-							if (_p23.ctor === 'Nothing') {
-								var _p24 = {ctor: '_Tuple2', _0: _p30, _1: _p32};
-								if (_p24._0.ctor === 'Empty') {
-									return _user$project$Tree_AVL$NeedRebalance(_p32);
+							var _p22 = alter(
+								_elm_lang$core$Maybe$Just(_p32));
+							if (_p22.ctor === 'Nothing') {
+								var _p23 = {ctor: '_Tuple2', _0: _p29, _1: _p31};
+								if (_p23._0.ctor === 'Empty') {
+									return _user$project$Tree_AVL$NeedRebalance(_p31);
 								} else {
-									if (_p24._1.ctor === 'Empty') {
-										return _user$project$Tree_AVL$NeedRebalance(_p30);
+									if (_p23._1.ctor === 'Empty') {
+										return _user$project$Tree_AVL$NeedRebalance(_p29);
 									} else {
-										var _p25 = getSmallest(_p32);
-										var skey = _p25._0;
-										var sval = _p25._1;
+										var _p24 = getSmallest(_p31);
+										var skey = _p24._0;
+										var sval = _p24._1;
 										var removeNext = A3(
 											up,
 											skey,
 											_elm_lang$core$Basics$always(_elm_lang$core$Maybe$Nothing),
-											_p32);
-										var _p26 = removeNext;
-										switch (_p26.ctor) {
+											_p31);
+										var _p25 = removeNext;
+										switch (_p25.ctor) {
 											case 'NoNeed':
 												return _user$project$Tree_AVL$NoNeed(
-													A4(_user$project$Tree_AVL$build, skey, sval, _p30, _p26._0));
+													A4(_user$project$Tree_AVL$build, skey, sval, _p29, _p25._0));
 											case 'NeedRebalance':
 												return _user$project$Tree_AVL$NeedRebalance(
 													_user$project$Tree_AVL$balance(
-														A4(_user$project$Tree_AVL$build, skey, sval, _p30, _p26._0)));
+														A4(_user$project$Tree_AVL$build, skey, sval, _p29, _p25._0)));
 											default:
 												return _user$project$Tree_AVL$NoOp;
 										}
 									}
 								}
 							} else {
-								var _p27 = _p23._0;
-								return _elm_lang$core$Native_Utils.eq(_p27, _p33) ? _user$project$Tree_AVL$NoOp : _user$project$Tree_AVL$NoNeed(
-									A5(_user$project$Tree_AVL$Node, _p31, key, _p27, _p30, _p32));
+								var _p26 = _p22._0;
+								return _elm_lang$core$Native_Utils.eq(_p26, _p32) ? _user$project$Tree_AVL$NoOp : _user$project$Tree_AVL$NoNeed(
+									A5(_user$project$Tree_AVL$Node, _p30, key, _p26, _p29, _p31));
 							}
 						default:
-							var _p28 = A3(up, key, alter, _p32);
-							switch (_p28.ctor) {
+							var _p27 = A3(up, key, alter, _p31);
+							switch (_p27.ctor) {
 								case 'NoNeed':
 									return _user$project$Tree_AVL$NoNeed(
-										A5(_user$project$Tree_AVL$Node, _p31, _p29, _p33, _p30, _p28._0));
+										A5(_user$project$Tree_AVL$Node, _p30, _p28, _p32, _p29, _p27._0));
 								case 'NeedRebalance':
 									return _user$project$Tree_AVL$NeedRebalance(
 										_user$project$Tree_AVL$balance(
-											A4(_user$project$Tree_AVL$build, _p29, _p33, _p30, _p28._0)));
+											A4(_user$project$Tree_AVL$build, _p28, _p32, _p29, _p27._0)));
 								default:
 									return _user$project$Tree_AVL$NoOp;
 							}
 					}
 				}
 			});
-		var _p34 = A3(up, key, alter, tree);
-		switch (_p34.ctor) {
+		var _p33 = A3(up, key, alter, tree);
+		switch (_p33.ctor) {
 			case 'NoNeed':
-				return _p34._0;
+				return _p33._0;
 			case 'NeedRebalance':
-				return _p34._0;
+				return _p33._0;
 			default:
 				return tree;
 		}
@@ -14408,13 +14397,13 @@ var _user$project$Tree_AVL$update = F3(
 var _user$project$Tree_AVL$fromList = A2(
 	_elm_lang$core$List$foldl,
 	F2(
-		function (_p35, dict) {
-			var _p36 = _p35;
+		function (_p34, dict) {
+			var _p35 = _p34;
 			return A3(
 				_user$project$Tree_AVL$update,
-				_p36._0,
+				_p35._0,
 				_elm_lang$core$Basics$always(
-					_elm_lang$core$Maybe$Just(_p36._1)),
+					_elm_lang$core$Maybe$Just(_p35._1)),
 				dict);
 		}),
 	_user$project$Tree_AVL$empty);
