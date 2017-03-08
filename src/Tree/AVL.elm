@@ -247,21 +247,16 @@ customSingleton 1 == < 1 . . >
 -}
 build : k -> v -> Tree k v -> Tree k v -> Tree k v
 build key value left right =
-    case ( left, right ) of
-        ( Empty, Empty ) ->
-            singleton key value
-
-        ( _, _ ) ->
-            Node
-                (max
-                    (height left)
-                    (height right)
-                    |> (+) 1
-                )
-                key
-                value
-                left
-                right
+    Node
+        (max
+            (height left)
+            (height right)
+            |> (+) 1
+        )
+        key
+        value
+        left
+        right
 
 
 {-| The height of a set is something baked right into the Tree, and is important
