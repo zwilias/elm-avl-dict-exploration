@@ -248,10 +248,11 @@ customSingleton 1 == < 1 . . >
 build : k -> v -> Tree k v -> Tree k v -> Tree k v
 build key value left right =
     Node
-        (max
+        ((max
             (height left)
             (height right)
-            |> (+) 1
+         )
+            + 1
         )
         key
         value
