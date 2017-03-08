@@ -121,7 +121,7 @@ allBenches =
 
 
 type alias Flags =
-    { browserInfo : BrowserInfo
+    { browserInfo : SafeBrowserInfo
     , seed : Int
     }
 
@@ -133,7 +133,9 @@ init flags =
             Random.initialSeed flags.seed
     in
         { currentBenchmark = Nothing
-        , browserInfo = flags.browserInfo
+        , browserInfo =
+            flags.browserInfo
+                |> fromSafeBrowserInfo
         , toRun =
             allBenches
                 |> shuffle
@@ -637,6 +639,23 @@ type alias BrowserInfo =
     , os : String
     , osVersion : String
     }
+
+
+type alias SafeBrowserInfo =
+    { name : Maybe String
+    , version : Maybe String
+    , os : Maybe String
+    , osVersion : Maybe String
+    }
+
+
+fromSafeBrowserInfo : SafeBrowserInfo -> BrowserInfo
+fromSafeBrowserInfo safeBrowserInfo =
+    BrowserInfo
+        (Maybe.withDefault "" safeBrowserInfo.name)
+        (Maybe.withDefault "" safeBrowserInfo.version)
+        (Maybe.withDefault "" safeBrowserInfo.os)
+        (Maybe.withDefault "" safeBrowserInfo.osVersion)
 
 
 main : Program Flags Model Msg
