@@ -4670,7 +4670,7 @@ var _BrianHicks$elm_benchmark$Benchmark$findSampleSize = function (operation) {
 	var fit = function (single) {
 		return _elm_lang$core$Basics$ceiling(minimumRuntime / single);
 	};
-	var initialSampleSize = 100;
+	var initialSampleSize = 1;
 	return A2(
 		_elm_lang$core$Task$map,
 		fit,
