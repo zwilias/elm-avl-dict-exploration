@@ -327,7 +327,9 @@ encodeSubmission browserInfo descriptor =
 view : Model -> Html Msg
 view model =
     Grid.container
-        [ A.class "main" ]
+        [ A.class "main"
+        , A.class <| toString model.runPhase
+        ]
         [ Grid.row []
             [ Grid.col []
                 [ Html.h1 [] [ Html.text "Dict vs Dict.AVL benchmarks" ] ]
@@ -369,7 +371,8 @@ renderFailed phase submissionList =
                         [ Button.small
                         , Button.warning
                         , Button.attrs <|
-                            [ E.onClick <| Retry submission ]
+                            [ E.onClick <| Retry submission
+                            ]
                         ]
                         [ Html.text "Retry" ]
                     ]
@@ -479,6 +482,7 @@ renderBrowserForm phase browserInfo =
                                         , Button.attrs
                                             [ E.onClick Start
                                             , A.href "#"
+                                            , A.class "startBench"
                                             ]
                                         ]
                                         [ Html.text "Start benching" ]
