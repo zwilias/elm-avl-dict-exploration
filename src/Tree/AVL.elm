@@ -77,20 +77,18 @@ update key alter tree =
                             NoOp
 
                         Just value ->
-                            singleton key value |> NeedRebalance
+                            NeedRebalance (singleton key value)
 
                 Node level k v left right ->
                     case compare key k of
                         LT ->
                             case up key alter left of
                                 NoNeed newLeft ->
-                                    Node level k v newLeft right
-                                        |> NoNeed
+                                    NoNeed (Node level k v newLeft right)
 
                                 NeedRebalance newLeft ->
-                                    build k v newLeft right
-                                        |> balance
-                                        |> NeedRebalance
+                                    NeedRebalance
+                                        (balance (build k v newLeft right))
 
                                 NoOp ->
                                     NoOp
@@ -100,10 +98,10 @@ update key alter tree =
                                 Nothing ->
                                     case ( left, right ) of
                                         ( Empty, _ ) ->
-                                            right |> NeedRebalance
+                                            NeedRebalance right
 
                                         ( _, Empty ) ->
-                                            left |> NeedRebalance
+                                            NeedRebalance left
 
                                         ( _, _ ) ->
                                             let
@@ -118,21 +116,24 @@ update key alter tree =
                                             in
                                                 case removeNext of
                                                     NoNeed newRight ->
-                                                        build
-                                                            skey
-                                                            sval
-                                                            left
-                                                            newRight
-                                                            |> NoNeed
+                                                        NoNeed
+                                                            (build
+                                                                skey
+                                                                sval
+                                                                left
+                                                                newRight
+                                                            )
 
                                                     NeedRebalance newRight ->
-                                                        build
-                                                            skey
-                                                            sval
-                                                            left
-                                                            newRight
-                                                            |> balance
-                                                            |> NeedRebalance
+                                                        NeedRebalance
+                                                            (balance
+                                                                (build
+                                                                    skey
+                                                                    sval
+                                                                    left
+                                                                    newRight
+                                                                )
+                                                            )
 
                                                     NoOp ->
                                                         NoOp
@@ -141,19 +142,16 @@ update key alter tree =
                                     if value == v then
                                         NoOp
                                     else
-                                        Node level key value left right
-                                            |> NoNeed
+                                        NoNeed (Node level key value left right)
 
                         GT ->
                             case up key alter right of
                                 NoNeed newRight ->
-                                    Node level k v left newRight
-                                        |> NoNeed
+                                    NoNeed (Node level k v left newRight)
 
                                 NeedRebalance newRight ->
-                                    build k v left newRight
-                                        |> balance
-                                        |> NeedRebalance
+                                    NeedRebalance
+                                        (balance (build k v left newRight))
 
                                 NoOp ->
                                     NoOp
@@ -177,23 +175,14 @@ get key tree =
 
         Node _ head value left right ->
             case compare key head of
+                EQ ->
+                    Just value
+
                 LT ->
                     get key left
 
                 GT ->
                     get key right
-
-                EQ ->
-                    Just value
-
-
-
--- Argument reposition helpers
-
-
-flip2nd : (a -> b -> c -> d) -> a -> c -> b -> d
-flip2nd op a c b =
-    op a b c
 
 
 
@@ -207,9 +196,7 @@ foldl op acc tree =
             acc
 
         Node _ key val left right ->
-            foldl op acc left
-                |> op key val
-                |> flip2nd foldl op right
+            foldl op (op key val (foldl op acc left)) right
 
 
 foldr : (k -> v -> a -> a) -> a -> Tree k v -> a
@@ -219,9 +206,7 @@ foldr op acc tree =
             acc
 
         Node _ key val left right ->
-            foldr op acc right
-                |> op key val
-                |> flip2nd foldr op left
+            foldr op (op key val (foldr op acc right)) left
 
 
 
@@ -290,7 +275,7 @@ height set =
 rotateLeft : Tree k v -> Tree k v
 rotateLeft set =
     case set of
-        Node level root rootVal less (Node rLevel pivot pivotVal between greater) ->
+        Node _ root rootVal less (Node _ pivot pivotVal between greater) ->
             build pivot pivotVal (build root rootVal less between) greater
 
         _ ->
@@ -302,7 +287,7 @@ rotateLeft set =
 rotateRight : Tree k v -> Tree k v
 rotateRight set =
     case set of
-        Node level root rootVal (Node lLevel pivot pivotVal less between) greater ->
+        Node _ root rootVal (Node _ pivot pivotVal less between) greater ->
             build pivot pivotVal less (build root rootVal between greater)
 
         _ ->
@@ -350,8 +335,8 @@ balance set =
                         {- left leaning tree with right-leaning left subtree.
                            Rotate left, then right.
                         -}
-                        Node (level) key value (rotateLeft left) right
-                            |> rotateRight
+                        rotateRight
+                            (Node level key value (rotateLeft left) right)
                     else
                         -- left leaning tree, generally. Rotate right.
                         rotateRight set
@@ -360,8 +345,8 @@ balance set =
                         {- right leaning tree with left-leaning right subtree.
                            Rotate right, then left.
                         -}
-                        Node level key value left (rotateRight right)
-                            |> rotateLeft
+                        rotateLeft
+                            (Node level key value left (rotateRight right))
                     else
                         -- right leaning tree, generally. Rotate left.
                         rotateLeft set

@@ -22,6 +22,7 @@ import Random.Insertion
 import Serial.Deletion
 import Serial.Insertion
 import Serial.Retrieval
+import Serial.Enumeration
 import Dict exposing (Dict)
 import Bootstrap.Form as Form
 import Bootstrap.Form.Input as Input
@@ -101,6 +102,7 @@ allBenches =
                 , ( "serial retrieval", Serial.Retrieval.suiteOfSize )
                 , ( "random deletion", Random.Deletion.suiteOfSize )
                 , ( "random insertion", Random.Insertion.suiteOfSize )
+                , ( "serial enumeration", Serial.Enumeration.suiteOfSize )
                 ]
 
         sizes : List Int
