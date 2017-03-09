@@ -14107,56 +14107,60 @@ var _user$project$Tree_AVL$heightDiff = function (set) {
 		return _user$project$Tree_AVL$height(_p1._4) - _user$project$Tree_AVL$height(_p1._3);
 	}
 };
-var _user$project$Tree_AVL$flip2nd = F4(
-	function (op, a, c, b) {
-		return A3(op, a, b, c);
-	});
-var _user$project$Tree_AVL$foldl = F3(
+var _user$project$Tree_AVL$foldr = F3(
 	function (op, acc, tree) {
-		var _p2 = tree;
-		if (_p2.ctor === 'Empty') {
-			return acc;
-		} else {
-			return A4(
-				_user$project$Tree_AVL$flip2nd,
-				_user$project$Tree_AVL$foldl,
-				op,
-				_p2._4,
-				A3(
+		foldr:
+		while (true) {
+			var _p2 = tree;
+			if (_p2.ctor === 'Empty') {
+				return acc;
+			} else {
+				var _v3 = op,
+					_v4 = A3(
 					op,
 					_p2._1,
 					_p2._2,
-					A3(_user$project$Tree_AVL$foldl, op, acc, _p2._3)));
+					A3(_user$project$Tree_AVL$foldr, op, acc, _p2._4)),
+					_v5 = _p2._3;
+				op = _v3;
+				acc = _v4;
+				tree = _v5;
+				continue foldr;
+			}
+		}
+	});
+var _user$project$Tree_AVL$foldl = F3(
+	function (op, acc, tree) {
+		foldl:
+		while (true) {
+			var _p3 = tree;
+			if (_p3.ctor === 'Empty') {
+				return acc;
+			} else {
+				var _v7 = op,
+					_v8 = A3(
+					op,
+					_p3._1,
+					_p3._2,
+					A3(_user$project$Tree_AVL$foldl, op, acc, _p3._3)),
+					_v9 = _p3._4;
+				op = _v7;
+				acc = _v8;
+				tree = _v9;
+				continue foldl;
+			}
 		}
 	});
 var _user$project$Tree_AVL$size = A2(
 	_user$project$Tree_AVL$foldl,
 	F2(
-		function (_p4, _p3) {
+		function (_p5, _p4) {
 			return F2(
 				function (x, y) {
 					return x + y;
 				})(1);
 		}),
 	0);
-var _user$project$Tree_AVL$foldr = F3(
-	function (op, acc, tree) {
-		var _p5 = tree;
-		if (_p5.ctor === 'Empty') {
-			return acc;
-		} else {
-			return A4(
-				_user$project$Tree_AVL$flip2nd,
-				_user$project$Tree_AVL$foldr,
-				op,
-				_p5._3,
-				A3(
-					op,
-					_p5._1,
-					_p5._2,
-					A3(_user$project$Tree_AVL$foldr, op, acc, _p5._4)));
-		}
-	});
 var _user$project$Tree_AVL$get = F2(
 	function (key, tree) {
 		get:
@@ -14167,20 +14171,20 @@ var _user$project$Tree_AVL$get = F2(
 			} else {
 				var _p7 = A2(_elm_lang$core$Basics$compare, key, _p6._1);
 				switch (_p7.ctor) {
+					case 'EQ':
+						return _elm_lang$core$Maybe$Just(_p6._2);
 					case 'LT':
-						var _v6 = key,
-							_v7 = _p6._3;
-						key = _v6;
-						tree = _v7;
-						continue get;
-					case 'GT':
-						var _v8 = key,
-							_v9 = _p6._4;
-						key = _v8;
-						tree = _v9;
+						var _v12 = key,
+							_v13 = _p6._3;
+						key = _v12;
+						tree = _v13;
 						continue get;
 					default:
-						return _elm_lang$core$Maybe$Just(_p6._2);
+						var _v14 = key,
+							_v15 = _p6._4;
+						key = _v14;
+						tree = _v15;
+						continue get;
 				}
 			}
 		}
@@ -14291,8 +14295,8 @@ var _user$project$Tree_AVL$update = F3(
 					if (_p16._3.ctor === 'Empty') {
 						return {ctor: '_Tuple2', _0: _p16._1, _1: _p16._2};
 					} else {
-						var _v14 = _p16._3;
-						tree = _v14;
+						var _v20 = _p16._3;
+						tree = _v20;
 						continue getSmallest;
 					}
 				}
@@ -15154,6 +15158,99 @@ var _user$project$Serial_Retrieval$suiteOfSize = function (size) {
 		});
 };
 
+var _user$project$Serial_Enumeration$forValues = F3(
+	function (name, size, keyer) {
+		var keys = A2(
+			_elm_lang$core$List$map,
+			keyer,
+			A2(_elm_lang$core$List$range, 1, size));
+		var source = A2(
+			_elm_lang$core$List$map,
+			A2(
+				_elm_lang$core$Basics$flip,
+				F2(
+					function (v0, v1) {
+						return {ctor: '_Tuple2', _0: v0, _1: v1};
+					}),
+				{ctor: '_Tuple0'}),
+			keys);
+		return A3(
+			_BrianHicks$elm_benchmark$Benchmark$compare,
+			name,
+			A3(
+				_BrianHicks$elm_benchmark$Benchmark$benchmark1,
+				'Dict',
+				_elm_lang$core$Dict$toList,
+				_elm_lang$core$Dict$fromList(source)),
+			A3(
+				_BrianHicks$elm_benchmark$Benchmark$benchmark1,
+				'Dict.AVL',
+				_user$project$Dict_AVL$toList,
+				_user$project$Dict_AVL$fromList(source)));
+	});
+var _user$project$Serial_Enumeration$suiteOfSize = function (size) {
+	return A2(
+		_BrianHicks$elm_benchmark$Benchmark$describe,
+		_elm_lang$core$Basics$toString(size),
+		{
+			ctor: '::',
+			_0: A3(_user$project$Serial_Enumeration$forValues, 'string', size, _elm_lang$core$Basics$toString),
+			_1: {
+				ctor: '::',
+				_0: A3(_user$project$Serial_Enumeration$forValues, 'int', size, _elm_lang$core$Basics$identity),
+				_1: {
+					ctor: '::',
+					_0: A3(_user$project$Serial_Enumeration$forValues, 'float', size, _elm_lang$core$Basics$toFloat),
+					_1: {
+						ctor: '::',
+						_0: A3(
+							_user$project$Serial_Enumeration$forValues,
+							'time',
+							size,
+							function (_p0) {
+								return A2(
+									F2(
+										function (x, y) {
+											return x * y;
+										}),
+									_elm_lang$core$Time$millisecond,
+									_elm_lang$core$Basics$toFloat(_p0));
+							}),
+						_1: {
+							ctor: '::',
+							_0: A3(_user$project$Serial_Enumeration$forValues, 'char', size, _elm_lang$core$Char$fromCode),
+							_1: {
+								ctor: '::',
+								_0: A3(
+									_user$project$Serial_Enumeration$forValues,
+									'tuple of int',
+									size,
+									function (i) {
+										return {ctor: '_Tuple2', _0: i, _1: i};
+									}),
+								_1: {
+									ctor: '::',
+									_0: A3(
+										_user$project$Serial_Enumeration$forValues,
+										'list of int',
+										size,
+										function (i) {
+											return {
+												ctor: '::',
+												_0: i,
+												_1: {ctor: '[]'}
+											};
+										}),
+									_1: {ctor: '[]'}
+								}
+							}
+						}
+					}
+				}
+			}
+		});
+};
+
 var _user$project$Shuffle$helper = function (_p0) {
 	var _p1 = _p0;
 	var _p2 = _p1._1;
@@ -15422,7 +15519,11 @@ var _user$project$Main$allBenches = function () {
 						_1: {
 							ctor: '::',
 							_0: {ctor: '_Tuple2', _0: 'random insertion', _1: _user$project$Random_Insertion$suiteOfSize},
-							_1: {ctor: '[]'}
+							_1: {
+								ctor: '::',
+								_0: {ctor: '_Tuple2', _0: 'serial enumeration', _1: _user$project$Serial_Enumeration$suiteOfSize},
+								_1: {ctor: '[]'}
+							}
 						}
 					}
 				}
