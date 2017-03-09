@@ -16212,7 +16212,11 @@ var _user$project$Main$renderBrowserForm = F2(
 																			_1: {
 																				ctor: '::',
 																				_0: _elm_lang$html$Html_Attributes$href('#'),
-																				_1: {ctor: '[]'}
+																				_1: {
+																					ctor: '::',
+																					_0: _elm_lang$html$Html_Attributes$class('startBench'),
+																					_1: {ctor: '[]'}
+																				}
 																			}
 																		}),
 																	_1: {ctor: '[]'}
@@ -16458,7 +16462,12 @@ var _user$project$Main$view = function (model) {
 		{
 			ctor: '::',
 			_0: _elm_lang$html$Html_Attributes$class('main'),
-			_1: {ctor: '[]'}
+			_1: {
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$class(
+					_elm_lang$core$Basics$toString(model.runPhase)),
+				_1: {ctor: '[]'}
+			}
 		},
 		{
 			ctor: '::',
