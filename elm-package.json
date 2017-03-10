@@ -1,5 +1,5 @@
 {
-    "version": "1.1.0",
+    "version": "1.1.1",
     "summary": "Alternative Dict implementation backed by an AVL tree.",
     "repository": "https://github.com/zwilias/elm-avl-dict-exploration.git",
     "license": "BSD3",
