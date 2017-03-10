@@ -32,8 +32,6 @@ install:
   - npm install -g elm@${ELM_VERSION} elm-test@${ELM_TEST_VERSION}
   - git clone https://github.com/NoRedInk/elm-ops-tooling
   - elm-ops-tooling/with_retry.rb elm package install --yes
-  - git clone -b patch-1 https://github.com/zwilias/elm-benchmark.git
-  - python elm-ops-tooling/elm_self_publish.py elm-benchmark/ benchmarks/
 
 
 script:
