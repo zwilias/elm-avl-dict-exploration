@@ -23,13 +23,17 @@ module Dict.AVL
         , values
         , toList
         , fromList
+        , eq
         )
 
 {-| Dict.AVL is an alternative Dict implementation backed by an AVL tree rather
-than a red black tree. It offers generally better performance across the board.
+than a red black tree. It offers much better write performance at the cost of
+marginally worse deletion performance and about on-par retrieval performance.
 
-Since its API is exactly the same as that of core's Dict, it can be used as a
-drop-in replacement.
+Its API is exactly the same as that of the core Dict, with *one* difference:
+checking for equality. With core's Dict, there is a special case in the `==`
+operator, which we can't use for our Dict. As such, we expose an `eq` function
+that can be used to check for equality of 2 Dicts.
 
 ---
 
@@ -46,7 +50,7 @@ Insert, remove, and query operations all take *O(log n)* time.
 @docs empty, singleton, insert, update, remove
 
 # Query
-@docs isEmpty, member, get, size
+@docs isEmpty, member, get, size, eq
 
 # Lists
 @docs keys, values, toList, fromList
@@ -91,6 +95,27 @@ dictionary.
 get : comparable -> Dict comparable v -> Maybe v
 get key (Dict tree) =
     Tree.get key tree
+
+
+{-| Check if two dicts are equal.
+
+Core's Dict is special cased in the `==` operator. Since the only way to get
+that same special casing is by using the exact same internal layout for the tree
+(so that it is compatible with `_elm_lang$core$Dict$toList`), it seems
+preferable to expose an `eq` function instead and *hope* people don't forget to
+use it.
+
+    dictOne = fromList [ (1, 1), (2, 2) ]
+    dictTwo = fromList [ (1, 1), (2, 2) ]
+    dictThree = fromList [ (1, 1) ]
+
+    eq dictOne dictTwo == true
+    eq dictOne dictThree == False
+
+-}
+eq : Dict comparable v -> Dict comparable v -> Bool
+eq left right =
+    (toList left) == (toList right)
 
 
 {-| Determine if a key is in a dictionary.
