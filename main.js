@@ -14554,6 +14554,12 @@ var _user$project$Dict_AVL$size = function (_p16) {
 		0,
 		_p17._0);
 };
+var _user$project$Dict_AVL$eq = F2(
+	function (left, right) {
+		return _elm_lang$core$Native_Utils.eq(
+			_user$project$Dict_AVL$toList(left),
+			_user$project$Dict_AVL$toList(right));
+	});
 var _user$project$Dict_AVL$get = F2(
 	function (key, _p18) {
 		var _p19 = _p18;
