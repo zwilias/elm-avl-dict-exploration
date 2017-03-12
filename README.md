@@ -20,3 +20,21 @@ by simply doing something like this:
 ```elm
 import Dict.AVL as Dict
 ```
+
+There is one exception - checking for equality. Since core's Dict is special
+cased in elm ecosystem for equality checks, and we can't use this same special
+case due to a different internal structure, you'll need to use the
+`Dict.AVL.eq` function.
+
+```elm
+import Dict.AVL as Dict
+
+left = Dict.fromList [(0, ()), (1, ())]
+right = Dict.fromList [(1, ()), (0, ())]
+
+-- This will return False
+left == right
+
+-- This works as expected and returns True
+Dict.eq left right
+```
