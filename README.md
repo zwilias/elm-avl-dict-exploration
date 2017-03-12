@@ -8,6 +8,10 @@ modifications, which is notoriously slow in Elm. AVL trees offer similar
 worst-case performance characteristics, but in this case, much better insertion
 performance.
 
+## Performance
+
+You can find a little write up on the benchmarks and the methodology on [this page](http://elm-avl-dict-bench.surge.sh).
+
 ## Using Dict.AVL
 
 `Dict.AVL` has the exact same API as core Dict, so using it can be accomplished
