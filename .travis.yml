@@ -5,7 +5,7 @@ node_js:
   - node # latest stable
 
 env:
-  - ELM_VERSION=0.18.0 ELM_TEST_VERSION=0.18.2
+  - ELM_VERSION=0.18.0 ELM_TEST_VERSION=0.18.2 ELM_DOC_TEST_VERSION=2.2.3
 
 cache:
   directories:
@@ -29,13 +29,14 @@ install:
       cd ..;
     fi
 
-  - npm install -g elm@${ELM_VERSION} elm-test@${ELM_TEST_VERSION}
+  - npm install -g elm@${ELM_VERSION} elm-test@${ELM_TEST_VERSION} elm-doc-test@${ELM_DOC_TEST_VERSION}
   - git clone https://github.com/NoRedInk/elm-ops-tooling
   - elm-ops-tooling/with_retry.rb elm package install --yes
 
 
 script:
   - $TRAVIS_BUILD_DIR/sysconfcpus/bin/sysconfcpus -n 2 elm make --yes
+  - elm-doc-test
   - elm-test
   - bash ./deploy.sh
 
