@@ -241,7 +241,6 @@ operation can result in one of 3 things:
 type Flag comparable v
     = NeedRebalance (Dict comparable v)
     | NoNeed (Dict comparable v)
-    | NoOp
 
 
 {-| Internal helper, used for handling internal delete operations. It uses 2
@@ -314,33 +313,31 @@ update :
 update key alter dict =
     let
         up :
-            comparable
-            -> (Maybe v -> Maybe v)
-            -> Dict comparable v
+            Dict comparable v
             -> Flag comparable v
-        up key alter dict =
+        up dict =
             case dict of
                 Empty ->
                     case alter Nothing of
                         Nothing ->
-                            NoOp
+                            NoNeed
+                                dict
 
                         Just value ->
-                            NeedRebalance (singleton key value)
+                            NeedRebalance
+                                (singleton key value)
 
                 Node level k v left right ->
                     case compare key k of
                         LT ->
-                            case up key alter left of
+                            case up left of
                                 NoNeed newLeft ->
-                                    NoNeed (Node level k v newLeft right)
+                                    NoNeed
+                                        (Node level k v newLeft right)
 
                                 NeedRebalance newLeft ->
                                     NeedRebalance
                                         (balance (build k v newLeft right))
-
-                                NoOp ->
-                                    NoOp
 
                         EQ ->
                             case alter (Just v) of
@@ -368,28 +365,24 @@ update key alter dict =
                                                     )
 
                                 Just value ->
-                                    NoNeed (Node level key value left right)
+                                    NoNeed
+                                        (Node level k value left right)
 
                         GT ->
-                            case up key alter right of
+                            case up right of
                                 NoNeed newRight ->
-                                    NoNeed (Node level k v left newRight)
+                                    NoNeed
+                                        (Node level k v left newRight)
 
                                 NeedRebalance newRight ->
                                     NeedRebalance
                                         (balance (build k v left newRight))
-
-                                NoOp ->
-                                    NoOp
     in
-        case up key alter dict of
+        case up dict of
             NoNeed dict ->
                 dict
 
             NeedRebalance dict ->
-                dict
-
-            NoOp ->
                 dict
 
 
