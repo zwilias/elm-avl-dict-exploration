@@ -64,6 +64,10 @@ Insert, remove, and query operations all take *O(log n)* time.
 @docs union, intersect, diff, merge
 
 # Checks
+
+In addition to the general API described here, we also expose two function that
+can be used to check the internal consistency of the AVL tree backing the Dict.
+These should *always* return True, which is what our test suite is testing.
 @docs isValidBst, isValidAvl
 
 -}

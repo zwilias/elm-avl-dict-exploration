@@ -1,5 +1,6 @@
-module Serial.Deletion exposing (..)
+module Serial.Deletion exposing (suiteOfSize, main)
 
+import Benchmark.Runner exposing (BenchmarkProgram, program)
 import Benchmark exposing (..)
 import Char
 import Dict as Dict
@@ -36,3 +37,8 @@ suiteOfSize size =
         , forValues "tuple of int" size (\i -> ( i, i ))
         , forValues "list of int" size (\i -> [ i ])
         ]
+
+
+main : BenchmarkProgram
+main =
+    program <| describe "cmp" <| List.map suiteOfSize [ 1, 10, 100, 1000 ]
