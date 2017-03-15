@@ -9468,6 +9468,962 @@ var _elm_lang$core$Process$kill = _elm_lang$core$Native_Scheduler.kill;
 var _elm_lang$core$Process$sleep = _elm_lang$core$Native_Scheduler.sleep;
 var _elm_lang$core$Process$spawn = _elm_lang$core$Native_Scheduler.spawn;
 
+var _BrianHicks$elm_benchmark$Benchmark_Runner$name = function (benchmark) {
+	var _p0 = benchmark;
+	switch (_p0.ctor) {
+		case 'Benchmark':
+			return _p0._0;
+		case 'Compare':
+			return A2(
+				_elm_lang$core$Basics_ops['++'],
+				_p0._0,
+				A2(
+					_elm_lang$core$Basics_ops['++'],
+					': ',
+					A2(
+						_elm_lang$core$Basics_ops['++'],
+						_BrianHicks$elm_benchmark$Benchmark_Runner$name(_p0._1),
+						A2(
+							_elm_lang$core$Basics_ops['++'],
+							' vs ',
+							_BrianHicks$elm_benchmark$Benchmark_Runner$name(_p0._2)))));
+		default:
+			return _p0._0;
+	}
+};
+var _BrianHicks$elm_benchmark$Benchmark_Runner$attrs = function (list) {
+	var row = function (_p1) {
+		var _p2 = _p1;
+		return A2(
+			_elm_lang$html$Html$tr,
+			{ctor: '[]'},
+			{
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$th,
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$style(
+							{
+								ctor: '::',
+								_0: {ctor: '_Tuple2', _0: 'text-align', _1: 'right'},
+								_1: {ctor: '[]'}
+							}),
+						_1: {ctor: '[]'}
+					},
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html$text(_p2._0),
+						_1: {ctor: '[]'}
+					}),
+				_1: {
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$td,
+						{ctor: '[]'},
+						{
+							ctor: '::',
+							_0: _p2._1,
+							_1: {ctor: '[]'}
+						}),
+					_1: {ctor: '[]'}
+				}
+			});
+	};
+	return A2(
+		_elm_lang$html$Html$table,
+		{ctor: '[]'},
+		A2(_elm_lang$core$List$map, row, list));
+};
+var _BrianHicks$elm_benchmark$Benchmark_Runner$groupsOfThree = function (items) {
+	var _p3 = A2(_elm_lang$core$List$take, 3, items);
+	if (_p3.ctor === '[]') {
+		return {ctor: '[]'};
+	} else {
+		return {
+			ctor: '::',
+			_0: _p3,
+			_1: _BrianHicks$elm_benchmark$Benchmark_Runner$groupsOfThree(
+				A2(_elm_lang$core$List$drop, 3, items))
+		};
+	}
+};
+var _BrianHicks$elm_benchmark$Benchmark_Runner$humanizeNumber = function (number) {
+	var humanizeDecimalPart = function (part) {
+		humanizeDecimalPart:
+		while (true) {
+			if (_elm_lang$core$Native_Utils.eq(part, '')) {
+				return '';
+			} else {
+				if (A2(_elm_lang$core$String$endsWith, '0', part)) {
+					var _v3 = A2(_elm_lang$core$String$dropRight, 1, part);
+					part = _v3;
+					continue humanizeDecimalPart;
+				} else {
+					return A2(_elm_lang$core$Basics_ops['++'], '.', part);
+				}
+			}
+		}
+	};
+	var humanizeIntegralPart = function (_p4) {
+		return _elm_lang$core$String$reverse(
+			A2(
+				_elm_lang$core$String$join,
+				',',
+				A2(
+					_elm_lang$core$List$map,
+					_elm_lang$core$String$fromList,
+					_BrianHicks$elm_benchmark$Benchmark_Runner$groupsOfThree(
+						_elm_lang$core$String$toList(
+							_elm_lang$core$String$reverse(_p4))))));
+	};
+	var _p5 = A2(
+		_elm_lang$core$String$split,
+		'.',
+		_elm_lang$core$Basics$toString(number));
+	_v4_2:
+	do {
+		if (_p5.ctor === '::') {
+			if (_p5._1.ctor === '[]') {
+				return humanizeIntegralPart(_p5._0);
+			} else {
+				if (_p5._1._1.ctor === '[]') {
+					return A2(
+						_elm_lang$core$Basics_ops['++'],
+						humanizeIntegralPart(_p5._0),
+						humanizeDecimalPart(_p5._1._0));
+				} else {
+					break _v4_2;
+				}
+			}
+		} else {
+			break _v4_2;
+		}
+	} while(false);
+	return _elm_lang$core$Basics$toString(number);
+};
+var _BrianHicks$elm_benchmark$Benchmark_Runner$humanizeSamplingMethodology = function (stats) {
+	return A2(
+		_elm_lang$core$Basics_ops['++'],
+		_BrianHicks$elm_benchmark$Benchmark_Runner$humanizeNumber(
+			_elm_lang$core$List$length(stats.samples)),
+		A2(
+			_elm_lang$core$Basics_ops['++'],
+			' runs of ',
+			A2(
+				_elm_lang$core$Basics_ops['++'],
+				_BrianHicks$elm_benchmark$Benchmark_Runner$humanizeNumber(stats.sampleSize),
+				' calls')));
+};
+var _BrianHicks$elm_benchmark$Benchmark_Runner$chopDecimal = F2(
+	function (places, number) {
+		var magnitude = _elm_lang$core$Basics$toFloat(
+			Math.pow(10, places));
+		return A3(
+			_elm_lang$core$Basics$flip,
+			F2(
+				function (x, y) {
+					return x / y;
+				}),
+			magnitude,
+			_elm_lang$core$Basics$toFloat(
+				_elm_lang$core$Basics$round(number * magnitude)));
+	});
+var _BrianHicks$elm_benchmark$Benchmark_Runner$humanizeTime = function () {
+	var chopToThousandth = function (_p6) {
+		return A3(
+			_elm_lang$core$Basics$flip,
+			F2(
+				function (x, y) {
+					return x / y;
+				}),
+			1000,
+			_elm_lang$core$Basics$toFloat(
+				_elm_lang$core$Basics$round(
+					A2(
+						F2(
+							function (x, y) {
+								return x * y;
+							}),
+						1000,
+						_p6))));
+	};
+	var helper = F2(
+		function (units, time) {
+			helper:
+			while (true) {
+				var _p7 = units;
+				if (_p7.ctor === '::') {
+					if (_p7._1.ctor === '[]') {
+						return A2(
+							_elm_lang$core$Basics_ops['++'],
+							_elm_lang$core$Basics$toString(
+								chopToThousandth(time)),
+							_p7._0);
+					} else {
+						if (_elm_lang$core$Native_Utils.cmp(time, 1) > 0) {
+							return A2(
+								_elm_lang$core$Basics_ops['++'],
+								_elm_lang$core$Basics$toString(
+									chopToThousandth(time)),
+								_p7._0);
+						} else {
+							var _v6 = _p7._1,
+								_v7 = time * 1000;
+							units = _v6;
+							time = _v7;
+							continue helper;
+						}
+					}
+				} else {
+					return A2(
+						_elm_lang$core$Basics_ops['++'],
+						_elm_lang$core$Basics$toString(time),
+						' of unknown unit');
+				}
+			}
+		});
+	return function (_p8) {
+		return A2(
+			helper,
+			{
+				ctor: '::',
+				_0: 's',
+				_1: {
+					ctor: '::',
+					_0: 'ms',
+					_1: {
+						ctor: '::',
+						_0: 'ns',
+						_1: {
+							ctor: '::',
+							_0: 'µs',
+							_1: {ctor: '[]'}
+						}
+					}
+				}
+			},
+			_elm_lang$core$Time$inSeconds(_p8));
+	};
+}();
+var _BrianHicks$elm_benchmark$Benchmark_Runner$percentChange = function (pct) {
+	return function (i) {
+		var _p9 = A2(_elm_lang$core$Basics$compare, i, 0);
+		if (_p9.ctor === 'GT') {
+			return A2(
+				_elm_lang$core$Basics_ops['++'],
+				'+',
+				A2(
+					_elm_lang$core$Basics_ops['++'],
+					_elm_lang$core$Basics$toString(i),
+					'%'));
+		} else {
+			return A2(
+				_elm_lang$core$Basics_ops['++'],
+				_elm_lang$core$Basics$toString(i),
+				'%');
+		}
+	}(
+		A3(
+			_elm_lang$core$Basics$flip,
+			F2(
+				function (x, y) {
+					return x / y;
+				}),
+			100,
+			_elm_lang$core$Basics$toFloat(
+				_elm_lang$core$Basics$round(
+					A2(
+						F2(
+							function (x, y) {
+								return x * y;
+							}),
+						10000,
+						pct)))));
+};
+var _BrianHicks$elm_benchmark$Benchmark_Runner$percent = function (pct) {
+	return _elm_lang$core$Basics$toString(
+		A3(
+			_elm_lang$core$Basics$flip,
+			F2(
+				function (x, y) {
+					return x / y;
+				}),
+			100,
+			_elm_lang$core$Basics$toFloat(
+				_elm_lang$core$Basics$round(
+					A2(
+						F2(
+							function (x, y) {
+								return x * y;
+							}),
+						10000,
+						pct)))));
+};
+var _BrianHicks$elm_benchmark$Benchmark_Runner$humanizeMeanRuntime = function (stats) {
+	var _p10 = _BrianHicks$elm_benchmark$Benchmark_Reporting$meanRuntime(stats);
+	var mean = _p10._0;
+	var stddev = _p10._1;
+	var pctDiff = ((stddev + mean) / mean) - 1;
+	return A2(
+		_elm_lang$core$Basics_ops['++'],
+		_BrianHicks$elm_benchmark$Benchmark_Runner$humanizeTime(mean),
+		A2(
+			_elm_lang$core$Basics_ops['++'],
+			' (stddev: ',
+			A2(
+				_elm_lang$core$Basics_ops['++'],
+				_BrianHicks$elm_benchmark$Benchmark_Runner$humanizeTime(stddev),
+				A2(
+					_elm_lang$core$Basics_ops['++'],
+					', ',
+					A2(
+						_elm_lang$core$Basics_ops['++'],
+						_BrianHicks$elm_benchmark$Benchmark_Runner$percent(pctDiff),
+						'%)')))));
+};
+var _BrianHicks$elm_benchmark$Benchmark_Runner$humanizeOpsPerSec = function (stats) {
+	var _p11 = _BrianHicks$elm_benchmark$Benchmark_Reporting$operationsPerSecond(stats);
+	var ops = _p11._0;
+	var stddev = _p11._1;
+	var pctDiff = ((stddev + ops) / ops) - 1;
+	return A2(
+		_elm_lang$core$Basics_ops['++'],
+		_BrianHicks$elm_benchmark$Benchmark_Runner$humanizeNumber(
+			A2(_BrianHicks$elm_benchmark$Benchmark_Runner$chopDecimal, 2, ops)),
+		A2(
+			_elm_lang$core$Basics_ops['++'],
+			' (stddev: ',
+			A2(
+				_elm_lang$core$Basics_ops['++'],
+				_BrianHicks$elm_benchmark$Benchmark_Runner$humanizeNumber(
+					A2(_BrianHicks$elm_benchmark$Benchmark_Runner$chopDecimal, 2, stddev)),
+				A2(
+					_elm_lang$core$Basics_ops['++'],
+					', ',
+					A2(
+						_elm_lang$core$Basics_ops['++'],
+						_BrianHicks$elm_benchmark$Benchmark_Runner$percent(pctDiff),
+						'%)')))));
+};
+var _BrianHicks$elm_benchmark$Benchmark_Runner$benchmarkView = function (benchmark) {
+	var humanizeStatus = function (status) {
+		var _p12 = status;
+		switch (_p12.ctor) {
+			case 'ToSize':
+				return _elm_lang$html$Html$text('Needs Sizing');
+			case 'Pending':
+				var _p14 = _p12._0;
+				var _p13 = _p12._2;
+				return A2(
+					_elm_lang$html$Html$div,
+					{ctor: '[]'},
+					{
+						ctor: '::',
+						_0: A2(
+							_elm_lang$html$Html$progress,
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$max(
+									_elm_lang$core$Basics$toString(_p14)),
+								_1: {
+									ctor: '::',
+									_0: _elm_lang$html$Html_Attributes$value(
+										_elm_lang$core$Basics$toString(
+											_elm_lang$core$List$sum(_p13))),
+									_1: {
+										ctor: '::',
+										_0: _elm_lang$html$Html_Attributes$style(
+											{
+												ctor: '::',
+												_0: {ctor: '_Tuple2', _0: 'display', _1: 'block'},
+												_1: {ctor: '[]'}
+											}),
+										_1: {ctor: '[]'}
+									}
+								}
+							},
+							{ctor: '[]'}),
+						_1: {
+							ctor: '::',
+							_0: _elm_lang$html$Html$text(
+								A2(
+									_elm_lang$core$Basics_ops['++'],
+									'Collected ',
+									A2(
+										_elm_lang$core$Basics_ops['++'],
+										_BrianHicks$elm_benchmark$Benchmark_Runner$humanizeTime(
+											_elm_lang$core$List$sum(_p13)),
+										A2(
+											_elm_lang$core$Basics_ops['++'],
+											' of ',
+											_BrianHicks$elm_benchmark$Benchmark_Runner$humanizeTime(_p14))))),
+							_1: {ctor: '[]'}
+						}
+					});
+			case 'Failure':
+				return _elm_lang$html$Html$text(
+					A2(
+						_elm_lang$core$Basics_ops['++'],
+						'Error: ',
+						_elm_lang$core$Basics$toString(_p12._0)));
+			default:
+				return _elm_lang$html$Html$text('Complete');
+		}
+	};
+	var _p15 = benchmark;
+	switch (_p15.ctor) {
+		case 'Benchmark':
+			var _p18 = _p15._1;
+			return A2(
+				_elm_lang$html$Html$section,
+				{ctor: '[]'},
+				{
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$h1,
+						{ctor: '[]'},
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html$text(
+								A2(_elm_lang$core$Basics_ops['++'], 'Benchmark: ', _p15._0)),
+							_1: {ctor: '[]'}
+						}),
+					_1: {
+						ctor: '::',
+						_0: function () {
+							var _p16 = _p18;
+							if (_p16.ctor === 'Success') {
+								var _p17 = _p16._0;
+								return _BrianHicks$elm_benchmark$Benchmark_Runner$attrs(
+									{
+										ctor: '::',
+										_0: {
+											ctor: '_Tuple2',
+											_0: 'mean ops/sec',
+											_1: _elm_lang$html$Html$text(
+												_BrianHicks$elm_benchmark$Benchmark_Runner$humanizeOpsPerSec(_p17))
+										},
+										_1: {
+											ctor: '::',
+											_0: {
+												ctor: '_Tuple2',
+												_0: 'mean runtime',
+												_1: _elm_lang$html$Html$text(
+													_BrianHicks$elm_benchmark$Benchmark_Runner$humanizeMeanRuntime(_p17))
+											},
+											_1: {
+												ctor: '::',
+												_0: {
+													ctor: '_Tuple2',
+													_0: 'total runtime',
+													_1: _elm_lang$html$Html$text(
+														_BrianHicks$elm_benchmark$Benchmark_Runner$humanizeTime(
+															_BrianHicks$elm_benchmark$Benchmark_Reporting$totalRuntime(_p17)))
+												},
+												_1: {
+													ctor: '::',
+													_0: {
+														ctor: '_Tuple2',
+														_0: 'sampling',
+														_1: _elm_lang$html$Html$text(
+															_BrianHicks$elm_benchmark$Benchmark_Runner$humanizeSamplingMethodology(_p17))
+													},
+													_1: {ctor: '[]'}
+												}
+											}
+										}
+									});
+							} else {
+								return _BrianHicks$elm_benchmark$Benchmark_Runner$attrs(
+									{
+										ctor: '::',
+										_0: {
+											ctor: '_Tuple2',
+											_0: 'status',
+											_1: humanizeStatus(_p18)
+										},
+										_1: {ctor: '[]'}
+									});
+							}
+						}(),
+						_1: {ctor: '[]'}
+					}
+				});
+		case 'Compare':
+			var content = function () {
+				var _p19 = {ctor: '_Tuple2', _0: _p15._1, _1: _p15._2};
+				if (((_p19.ctor === '_Tuple2') && (_p19._0.ctor === 'Benchmark')) && (_p19._1.ctor === 'Benchmark')) {
+					var _p26 = _p19._1._1;
+					var _p25 = _p19._0._1;
+					var _p24 = _p19._1._0;
+					var _p23 = _p19._0._0;
+					return A2(
+						_elm_lang$html$Html$div,
+						{ctor: '[]'},
+						{
+							ctor: '::',
+							_0: function () {
+								var _p20 = {ctor: '_Tuple2', _0: _p25, _1: _p26};
+								if (((_p20.ctor === '_Tuple2') && (_p20._0.ctor === 'Success')) && (_p20._1.ctor === 'Success')) {
+									var _p22 = _p20._1._0;
+									var _p21 = _p20._0._0;
+									var cell = function (caption) {
+										return A2(
+											_elm_lang$html$Html$td,
+											{ctor: '[]'},
+											{
+												ctor: '::',
+												_0: _elm_lang$html$Html$text(caption),
+												_1: {ctor: '[]'}
+											});
+									};
+									var rowHead = function (caption) {
+										return A2(
+											_elm_lang$html$Html$th,
+											{
+												ctor: '::',
+												_0: _elm_lang$html$Html_Attributes$style(
+													{
+														ctor: '::',
+														_0: {ctor: '_Tuple2', _0: 'text-align', _1: 'right'},
+														_1: {ctor: '[]'}
+													}),
+												_1: {ctor: '[]'}
+											},
+											{
+												ctor: '::',
+												_0: _elm_lang$html$Html$text(caption),
+												_1: {ctor: '[]'}
+											});
+									};
+									var head = function (caption) {
+										return A2(
+											_elm_lang$html$Html$th,
+											{ctor: '[]'},
+											{
+												ctor: '::',
+												_0: _elm_lang$html$Html$text(caption),
+												_1: {ctor: '[]'}
+											});
+									};
+									var table = function (rows) {
+										return A2(
+											_elm_lang$html$Html$table,
+											{ctor: '[]'},
+											{
+												ctor: '::',
+												_0: A2(
+													_elm_lang$html$Html$thead,
+													{ctor: '[]'},
+													{
+														ctor: '::',
+														_0: head(''),
+														_1: {
+															ctor: '::',
+															_0: head(_p23),
+															_1: {
+																ctor: '::',
+																_0: head(_p24),
+																_1: {
+																	ctor: '::',
+																	_0: head('delta'),
+																	_1: {ctor: '[]'}
+																}
+															}
+														}
+													}),
+												_1: {
+													ctor: '::',
+													_0: A2(
+														_elm_lang$html$Html$tbody,
+														{ctor: '[]'},
+														A2(
+															_elm_lang$core$List$map,
+															_elm_lang$html$Html$tr(
+																{ctor: '[]'}),
+															rows)),
+													_1: {ctor: '[]'}
+												}
+											});
+									};
+									return table(
+										{
+											ctor: '::',
+											_0: {
+												ctor: '::',
+												_0: rowHead('mean ops/sec'),
+												_1: {
+													ctor: '::',
+													_0: cell(
+														_BrianHicks$elm_benchmark$Benchmark_Runner$humanizeOpsPerSec(_p21)),
+													_1: {
+														ctor: '::',
+														_0: cell(
+															_BrianHicks$elm_benchmark$Benchmark_Runner$humanizeOpsPerSec(_p22)),
+														_1: {
+															ctor: '::',
+															_0: cell(
+																_BrianHicks$elm_benchmark$Benchmark_Runner$percentChange(
+																	A2(_BrianHicks$elm_benchmark$Benchmark_Reporting$compareOperationsPerSecond, _p22, _p21))),
+															_1: {ctor: '[]'}
+														}
+													}
+												}
+											},
+											_1: {
+												ctor: '::',
+												_0: {
+													ctor: '::',
+													_0: rowHead('mean runtime'),
+													_1: {
+														ctor: '::',
+														_0: cell(
+															_BrianHicks$elm_benchmark$Benchmark_Runner$humanizeMeanRuntime(_p21)),
+														_1: {
+															ctor: '::',
+															_0: cell(
+																_BrianHicks$elm_benchmark$Benchmark_Runner$humanizeMeanRuntime(_p22)),
+															_1: {
+																ctor: '::',
+																_0: cell(
+																	_BrianHicks$elm_benchmark$Benchmark_Runner$percentChange(
+																		A2(_BrianHicks$elm_benchmark$Benchmark_Reporting$compareMeanRuntime, _p22, _p21))),
+																_1: {ctor: '[]'}
+															}
+														}
+													}
+												},
+												_1: {
+													ctor: '::',
+													_0: {
+														ctor: '::',
+														_0: rowHead('total runtime'),
+														_1: {
+															ctor: '::',
+															_0: cell(
+																_BrianHicks$elm_benchmark$Benchmark_Runner$humanizeTime(
+																	_BrianHicks$elm_benchmark$Benchmark_Reporting$totalRuntime(_p21))),
+															_1: {
+																ctor: '::',
+																_0: cell(
+																	_BrianHicks$elm_benchmark$Benchmark_Runner$humanizeTime(
+																		_BrianHicks$elm_benchmark$Benchmark_Reporting$totalRuntime(_p22))),
+																_1: {
+																	ctor: '::',
+																	_0: cell(''),
+																	_1: {ctor: '[]'}
+																}
+															}
+														}
+													},
+													_1: {
+														ctor: '::',
+														_0: {
+															ctor: '::',
+															_0: rowHead('sampling'),
+															_1: {
+																ctor: '::',
+																_0: cell(
+																	_BrianHicks$elm_benchmark$Benchmark_Runner$humanizeSamplingMethodology(_p21)),
+																_1: {
+																	ctor: '::',
+																	_0: cell(
+																		_BrianHicks$elm_benchmark$Benchmark_Runner$humanizeSamplingMethodology(_p22)),
+																	_1: {
+																		ctor: '::',
+																		_0: cell(''),
+																		_1: {ctor: '[]'}
+																	}
+																}
+															}
+														},
+														_1: {ctor: '[]'}
+													}
+												}
+											}
+										});
+								} else {
+									return A2(
+										_elm_lang$html$Html$table,
+										{ctor: '[]'},
+										{
+											ctor: '::',
+											_0: A2(
+												_elm_lang$html$Html$tr,
+												{ctor: '[]'},
+												{
+													ctor: '::',
+													_0: A2(
+														_elm_lang$html$Html$th,
+														{ctor: '[]'},
+														{
+															ctor: '::',
+															_0: _elm_lang$html$Html$text(_p23),
+															_1: {ctor: '[]'}
+														}),
+													_1: {
+														ctor: '::',
+														_0: A2(
+															_elm_lang$html$Html$td,
+															{ctor: '[]'},
+															{
+																ctor: '::',
+																_0: humanizeStatus(_p25),
+																_1: {ctor: '[]'}
+															}),
+														_1: {ctor: '[]'}
+													}
+												}),
+											_1: {
+												ctor: '::',
+												_0: A2(
+													_elm_lang$html$Html$tr,
+													{ctor: '[]'},
+													{
+														ctor: '::',
+														_0: A2(
+															_elm_lang$html$Html$th,
+															{ctor: '[]'},
+															{
+																ctor: '::',
+																_0: _elm_lang$html$Html$text(_p24),
+																_1: {ctor: '[]'}
+															}),
+														_1: {
+															ctor: '::',
+															_0: A2(
+																_elm_lang$html$Html$td,
+																{ctor: '[]'},
+																{
+																	ctor: '::',
+																	_0: humanizeStatus(_p26),
+																	_1: {ctor: '[]'}
+																}),
+															_1: {ctor: '[]'}
+														}
+													}),
+												_1: {ctor: '[]'}
+											}
+										});
+								}
+							}(),
+							_1: {ctor: '[]'}
+						});
+				} else {
+					return A2(
+						_elm_lang$html$Html$div,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$class('invalid'),
+							_1: {ctor: '[]'}
+						},
+						{
+							ctor: '::',
+							_0: A2(
+								_elm_lang$html$Html$p,
+								{ctor: '[]'},
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html$text('Sorry, I can\'t compare these kinds of benchmarks directly.'),
+									_1: {ctor: '[]'}
+								}),
+							_1: {
+								ctor: '::',
+								_0: A2(
+									_elm_lang$html$Html$p,
+									{ctor: '[]'},
+									{
+										ctor: '::',
+										_0: _elm_lang$html$Html$text('Here are the serialized values so you can do it yourself:'),
+										_1: {ctor: '[]'}
+									}),
+								_1: {
+									ctor: '::',
+									_0: A2(
+										_elm_lang$html$Html$pre,
+										{
+											ctor: '::',
+											_0: _elm_lang$html$Html_Attributes$style(
+												{
+													ctor: '::',
+													_0: {ctor: '_Tuple2', _0: 'background-color', _1: '#EEE'},
+													_1: {
+														ctor: '::',
+														_0: {ctor: '_Tuple2', _0: 'border-radius', _1: '5px'},
+														_1: {
+															ctor: '::',
+															_0: {ctor: '_Tuple2', _0: 'padding', _1: '5px'},
+															_1: {ctor: '[]'}
+														}
+													}
+												}),
+											_1: {ctor: '[]'}
+										},
+										{
+											ctor: '::',
+											_0: A2(
+												_elm_lang$html$Html$code,
+												{ctor: '[]'},
+												{
+													ctor: '::',
+													_0: _elm_lang$html$Html$text(
+														A2(
+															_elm_lang$core$Json_Encode$encode,
+															2,
+															_BrianHicks$elm_benchmark$Benchmark_Reporting$encoder(benchmark))),
+													_1: {ctor: '[]'}
+												}),
+											_1: {ctor: '[]'}
+										}),
+									_1: {ctor: '[]'}
+								}
+							}
+						});
+				}
+			}();
+			return A2(
+				_elm_lang$html$Html$section,
+				{ctor: '[]'},
+				{
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$h1,
+						{ctor: '[]'},
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html$text(
+								A2(
+									_elm_lang$core$Basics_ops['++'],
+									'Comparing ',
+									_BrianHicks$elm_benchmark$Benchmark_Runner$name(benchmark))),
+							_1: {ctor: '[]'}
+						}),
+					_1: {
+						ctor: '::',
+						_0: content,
+						_1: {ctor: '[]'}
+					}
+				});
+		default:
+			return A2(
+				_elm_lang$html$Html$section,
+				{ctor: '[]'},
+				{
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$h1,
+						{ctor: '[]'},
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html$text(
+								A2(_elm_lang$core$Basics_ops['++'], 'Group: ', _p15._0)),
+							_1: {ctor: '[]'}
+						}),
+					_1: {
+						ctor: '::',
+						_0: A2(
+							_elm_lang$html$Html$ol,
+							{ctor: '[]'},
+							A2(_elm_lang$core$List$map, _BrianHicks$elm_benchmark$Benchmark_Runner$benchmarkView, _p15._1)),
+						_1: {ctor: '[]'}
+					}
+				});
+	}
+};
+var _BrianHicks$elm_benchmark$Benchmark_Runner$view = function (model) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{ctor: '[]'},
+		{
+			ctor: '::',
+			_0: A2(
+				_elm_lang$html$Html$p,
+				{ctor: '[]'},
+				{
+					ctor: '::',
+					_0: model.running ? _elm_lang$html$Html$text('Benchmark Running') : _elm_lang$html$Html$text('Benchmark Finished'),
+					_1: {ctor: '[]'}
+				}),
+			_1: {
+				ctor: '::',
+				_0: _BrianHicks$elm_benchmark$Benchmark_Runner$benchmarkView(
+					_BrianHicks$elm_benchmark$Benchmark_Reporting$fromBenchmark(model.benchmark)),
+				_1: {ctor: '[]'}
+			}
+		});
+};
+var _BrianHicks$elm_benchmark$Benchmark_Runner$result = function (status) {
+	var _p27 = status;
+	if (_p27.ctor === 'Success') {
+		return _elm_lang$core$Maybe$Just(_p27._0);
+	} else {
+		return _elm_lang$core$Maybe$Nothing;
+	}
+};
+var _BrianHicks$elm_benchmark$Benchmark_Runner$breakForRender = function (task) {
+	return A2(
+		_elm_lang$core$Task$andThen,
+		function (_p28) {
+			return task;
+		},
+		_elm_lang$core$Process$sleep(0));
+};
+var _BrianHicks$elm_benchmark$Benchmark_Runner$Model = F2(
+	function (a, b) {
+		return {running: a, benchmark: b};
+	});
+var _BrianHicks$elm_benchmark$Benchmark_Runner$Update = function (a) {
+	return {ctor: 'Update', _0: a};
+};
+var _BrianHicks$elm_benchmark$Benchmark_Runner$next = function (_p29) {
+	return A2(
+		_elm_lang$core$Maybe$map,
+		_elm_lang$core$Task$perform(_BrianHicks$elm_benchmark$Benchmark_Runner$Update),
+		A2(
+			_elm_lang$core$Maybe$map,
+			_BrianHicks$elm_benchmark$Benchmark_Runner$breakForRender,
+			_BrianHicks$elm_benchmark$Benchmark$step(_p29)));
+};
+var _BrianHicks$elm_benchmark$Benchmark_Runner$update = F2(
+	function (msg, model) {
+		var _p30 = msg;
+		var _p32 = _p30._0;
+		var _p31 = _BrianHicks$elm_benchmark$Benchmark_Runner$next(_p32);
+		if (_p31.ctor === 'Just') {
+			return {
+				ctor: '_Tuple2',
+				_0: _elm_lang$core$Native_Utils.update(
+					model,
+					{benchmark: _p32, running: true}),
+				_1: _p31._0
+			};
+		} else {
+			return {
+				ctor: '_Tuple2',
+				_0: _elm_lang$core$Native_Utils.update(
+					model,
+					{benchmark: _p32, running: false}),
+				_1: _elm_lang$core$Platform_Cmd$none
+			};
+		}
+	});
+var _BrianHicks$elm_benchmark$Benchmark_Runner$init = function (benchmark) {
+	return A2(
+		_BrianHicks$elm_benchmark$Benchmark_Runner$update,
+		_BrianHicks$elm_benchmark$Benchmark_Runner$Update(benchmark),
+		{benchmark: benchmark, running: true});
+};
+var _BrianHicks$elm_benchmark$Benchmark_Runner$program = function (benchmark) {
+	return _elm_lang$html$Html$program(
+		{
+			init: _BrianHicks$elm_benchmark$Benchmark_Runner$init(benchmark),
+			update: _BrianHicks$elm_benchmark$Benchmark_Runner$update,
+			view: _BrianHicks$elm_benchmark$Benchmark_Runner$view,
+			subscriptions: _elm_lang$core$Basics$always(_elm_lang$core$Platform_Sub$none)
+		});
+};
+
 var _elm_lang$core$Native_Bitwise = function() {
 
 return {
@@ -14455,8 +15411,8 @@ var _user$project$Dict_AVL$removeSmallest = function (subTree) {
 			return _elm_lang$core$Native_Utils.crashCase(
 				'Dict.AVL',
 				{
-					start: {line: 276, column: 13},
-					end: {line: 284, column: 46}
+					start: {line: 280, column: 13},
+					end: {line: 288, column: 46}
 				},
 				_p36)('unreachable');
 		}
@@ -14477,8 +15433,8 @@ var _user$project$Dict_AVL$removeSmallest = function (subTree) {
 				return _elm_lang$core$Native_Utils.crashCase(
 					'Dict.AVL',
 					{
-						start: {line: 264, column: 13},
-						end: {line: 272, column: 46}
+						start: {line: 268, column: 13},
+						end: {line: 276, column: 46}
 					},
 					_p38)('unreachable');
 			}
@@ -14796,6 +15752,30 @@ var _user$project$Random_Deletion$suiteOfSize = function (size) {
 			}
 		});
 };
+var _user$project$Random_Deletion$main = _BrianHicks$elm_benchmark$Benchmark_Runner$program(
+	A2(
+		_BrianHicks$elm_benchmark$Benchmark$describe,
+		'cmp',
+		A2(
+			_elm_lang$core$List$map,
+			_user$project$Random_Deletion$suiteOfSize,
+			{
+				ctor: '::',
+				_0: 1,
+				_1: {
+					ctor: '::',
+					_0: 10,
+					_1: {
+						ctor: '::',
+						_0: 100,
+						_1: {
+							ctor: '::',
+							_0: 1000,
+							_1: {ctor: '[]'}
+						}
+					}
+				}
+			})))();
 
 var _user$project$Random_Insertion$listOfSize = F2(
 	function (seed, size) {
@@ -14889,6 +15869,30 @@ var _user$project$Random_Insertion$suiteOfSize = function (size) {
 			}
 		});
 };
+var _user$project$Random_Insertion$main = _BrianHicks$elm_benchmark$Benchmark_Runner$program(
+	A2(
+		_BrianHicks$elm_benchmark$Benchmark$describe,
+		'cmp',
+		A2(
+			_elm_lang$core$List$map,
+			_user$project$Random_Insertion$suiteOfSize,
+			{
+				ctor: '::',
+				_0: 1,
+				_1: {
+					ctor: '::',
+					_0: 10,
+					_1: {
+						ctor: '::',
+						_0: 100,
+						_1: {
+							ctor: '::',
+							_0: 1000,
+							_1: {ctor: '[]'}
+						}
+					}
+				}
+			})))();
 
 var _user$project$Serial_Deletion$forValues = F3(
 	function (name, size, keyer) {
@@ -14984,6 +15988,30 @@ var _user$project$Serial_Deletion$suiteOfSize = function (size) {
 			}
 		});
 };
+var _user$project$Serial_Deletion$main = _BrianHicks$elm_benchmark$Benchmark_Runner$program(
+	A2(
+		_BrianHicks$elm_benchmark$Benchmark$describe,
+		'cmp',
+		A2(
+			_elm_lang$core$List$map,
+			_user$project$Serial_Deletion$suiteOfSize,
+			{
+				ctor: '::',
+				_0: 1,
+				_1: {
+					ctor: '::',
+					_0: 10,
+					_1: {
+						ctor: '::',
+						_0: 100,
+						_1: {
+							ctor: '::',
+							_0: 1000,
+							_1: {ctor: '[]'}
+						}
+					}
+				}
+			})))();
 
 var _user$project$Serial_Insertion$forValues = F3(
 	function (name, size, keyer) {
@@ -15065,6 +16093,30 @@ var _user$project$Serial_Insertion$suiteOfSize = function (size) {
 			}
 		});
 };
+var _user$project$Serial_Insertion$main = _BrianHicks$elm_benchmark$Benchmark_Runner$program(
+	A2(
+		_BrianHicks$elm_benchmark$Benchmark$describe,
+		'cmp',
+		A2(
+			_elm_lang$core$List$map,
+			_user$project$Serial_Insertion$suiteOfSize,
+			{
+				ctor: '::',
+				_0: 1,
+				_1: {
+					ctor: '::',
+					_0: 10,
+					_1: {
+						ctor: '::',
+						_0: 100,
+						_1: {
+							ctor: '::',
+							_0: 1000,
+							_1: {ctor: '[]'}
+						}
+					}
+				}
+			})))();
 
 var _user$project$Serial_Retrieval$forValues = F3(
 	function (name, size, keyer) {
@@ -15176,6 +16228,30 @@ var _user$project$Serial_Retrieval$suiteOfSize = function (size) {
 			}
 		});
 };
+var _user$project$Serial_Retrieval$main = _BrianHicks$elm_benchmark$Benchmark_Runner$program(
+	A2(
+		_BrianHicks$elm_benchmark$Benchmark$describe,
+		'cmp',
+		A2(
+			_elm_lang$core$List$map,
+			_user$project$Serial_Retrieval$suiteOfSize,
+			{
+				ctor: '::',
+				_0: 1,
+				_1: {
+					ctor: '::',
+					_0: 10,
+					_1: {
+						ctor: '::',
+						_0: 100,
+						_1: {
+							ctor: '::',
+							_0: 1000,
+							_1: {ctor: '[]'}
+						}
+					}
+				}
+			})))();
 
 var _user$project$Serial_Enumeration$forValues = F3(
 	function (name, size, keyer) {
@@ -15269,6 +16345,30 @@ var _user$project$Serial_Enumeration$suiteOfSize = function (size) {
 			}
 		});
 };
+var _user$project$Serial_Enumeration$main = _BrianHicks$elm_benchmark$Benchmark_Runner$program(
+	A2(
+		_BrianHicks$elm_benchmark$Benchmark$describe,
+		'cmp',
+		A2(
+			_elm_lang$core$List$map,
+			_user$project$Serial_Enumeration$suiteOfSize,
+			{
+				ctor: '::',
+				_0: 1,
+				_1: {
+					ctor: '::',
+					_0: 10,
+					_1: {
+						ctor: '::',
+						_0: 100,
+						_1: {
+							ctor: '::',
+							_0: 1000,
+							_1: {ctor: '[]'}
+						}
+					}
+				}
+			})))();
 
 var _user$project$Shuffle$helper = function (_p0) {
 	var _p1 = _p0;
