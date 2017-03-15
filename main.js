@@ -15411,8 +15411,8 @@ var _user$project$Dict_AVL$removeSmallest = function (subTree) {
 			return _elm_lang$core$Native_Utils.crashCase(
 				'Dict.AVL',
 				{
-					start: {line: 280, column: 13},
-					end: {line: 288, column: 46}
+					start: {line: 279, column: 13},
+					end: {line: 287, column: 46}
 				},
 				_p36)('unreachable');
 		}
@@ -15433,8 +15433,8 @@ var _user$project$Dict_AVL$removeSmallest = function (subTree) {
 				return _elm_lang$core$Native_Utils.crashCase(
 					'Dict.AVL',
 					{
-						start: {line: 268, column: 13},
-						end: {line: 276, column: 46}
+						start: {line: 267, column: 13},
+						end: {line: 275, column: 46}
 					},
 					_p38)('unreachable');
 			}
@@ -15455,7 +15455,6 @@ var _user$project$Dict_AVL$singleton = F2(
 	function (key, val) {
 		return A5(_user$project$Dict_AVL$Node, 1, key, val, _user$project$Dict_AVL$empty, _user$project$Dict_AVL$empty);
 	});
-var _user$project$Dict_AVL$NoOp = {ctor: 'NoOp'};
 var _user$project$Dict_AVL$NoNeed = function (a) {
 	return {ctor: 'NoNeed', _0: a};
 };
@@ -15464,86 +15463,76 @@ var _user$project$Dict_AVL$NeedRebalance = function (a) {
 };
 var _user$project$Dict_AVL$update = F3(
 	function (key, alter, dict) {
-		var up = F3(
-			function (key, alter, dict) {
-				var _p40 = dict;
-				if (_p40.ctor === 'Empty') {
-					var _p41 = alter(_elm_lang$core$Maybe$Nothing);
-					if (_p41.ctor === 'Nothing') {
-						return _user$project$Dict_AVL$NoOp;
-					} else {
-						return _user$project$Dict_AVL$NeedRebalance(
-							A2(_user$project$Dict_AVL$singleton, key, _p41._0));
-					}
+		var up = function (dict) {
+			var _p40 = dict;
+			if (_p40.ctor === 'Empty') {
+				var _p41 = alter(_elm_lang$core$Maybe$Nothing);
+				if (_p41.ctor === 'Nothing') {
+					return _user$project$Dict_AVL$NoNeed(dict);
 				} else {
-					var _p52 = _p40._2;
-					var _p51 = _p40._4;
-					var _p50 = _p40._0;
-					var _p49 = _p40._3;
-					var _p48 = _p40._1;
-					var _p42 = A2(_elm_lang$core$Basics$compare, key, _p48);
-					switch (_p42.ctor) {
-						case 'LT':
-							var _p43 = A3(up, key, alter, _p49);
-							switch (_p43.ctor) {
-								case 'NoNeed':
-									return _user$project$Dict_AVL$NoNeed(
-										A5(_user$project$Dict_AVL$Node, _p50, _p48, _p52, _p43._0, _p51));
-								case 'NeedRebalance':
-									return _user$project$Dict_AVL$NeedRebalance(
-										_user$project$Dict_AVL$balance(
-											A4(_user$project$Dict_AVL$build, _p48, _p52, _p43._0, _p51)));
-								default:
-									return _user$project$Dict_AVL$NoOp;
-							}
-						case 'EQ':
-							var _p44 = alter(
-								_elm_lang$core$Maybe$Just(_p52));
-							if (_p44.ctor === 'Nothing') {
-								var _p45 = {ctor: '_Tuple2', _0: _p49, _1: _p51};
-								if (_p45._0.ctor === 'Empty') {
-									return _user$project$Dict_AVL$NeedRebalance(_p51);
-								} else {
-									if (_p45._1.ctor === 'Empty') {
-										return _user$project$Dict_AVL$NeedRebalance(_p49);
-									} else {
-										var _p46 = _user$project$Dict_AVL$removeSmallest(_p51);
-										var nKey = _p46._0._0;
-										var nVal = _p46._0._1;
-										var nRight = _p46._1;
-										return _user$project$Dict_AVL$NeedRebalance(
-											_user$project$Dict_AVL$balance(
-												A4(_user$project$Dict_AVL$build, nKey, nVal, _p49, nRight)));
-									}
-								}
-							} else {
-								return _user$project$Dict_AVL$NoNeed(
-									A5(_user$project$Dict_AVL$Node, _p50, key, _p44._0, _p49, _p51));
-							}
-						default:
-							var _p47 = A3(up, key, alter, _p51);
-							switch (_p47.ctor) {
-								case 'NoNeed':
-									return _user$project$Dict_AVL$NoNeed(
-										A5(_user$project$Dict_AVL$Node, _p50, _p48, _p52, _p49, _p47._0));
-								case 'NeedRebalance':
-									return _user$project$Dict_AVL$NeedRebalance(
-										_user$project$Dict_AVL$balance(
-											A4(_user$project$Dict_AVL$build, _p48, _p52, _p49, _p47._0)));
-								default:
-									return _user$project$Dict_AVL$NoOp;
-							}
-					}
+					return _user$project$Dict_AVL$NeedRebalance(
+						A2(_user$project$Dict_AVL$singleton, key, _p41._0));
 				}
-			});
-		var _p53 = A3(up, key, alter, dict);
-		switch (_p53.ctor) {
-			case 'NoNeed':
-				return _p53._0;
-			case 'NeedRebalance':
-				return _p53._0;
-			default:
-				return dict;
+			} else {
+				var _p52 = _p40._2;
+				var _p51 = _p40._4;
+				var _p50 = _p40._0;
+				var _p49 = _p40._3;
+				var _p48 = _p40._1;
+				var _p42 = A2(_elm_lang$core$Basics$compare, key, _p48);
+				switch (_p42.ctor) {
+					case 'LT':
+						var _p43 = up(_p49);
+						if (_p43.ctor === 'NoNeed') {
+							return _user$project$Dict_AVL$NoNeed(
+								A5(_user$project$Dict_AVL$Node, _p50, _p48, _p52, _p43._0, _p51));
+						} else {
+							return _user$project$Dict_AVL$NeedRebalance(
+								_user$project$Dict_AVL$balance(
+									A4(_user$project$Dict_AVL$build, _p48, _p52, _p43._0, _p51)));
+						}
+					case 'EQ':
+						var _p44 = alter(
+							_elm_lang$core$Maybe$Just(_p52));
+						if (_p44.ctor === 'Nothing') {
+							var _p45 = {ctor: '_Tuple2', _0: _p49, _1: _p51};
+							if (_p45._0.ctor === 'Empty') {
+								return _user$project$Dict_AVL$NeedRebalance(_p51);
+							} else {
+								if (_p45._1.ctor === 'Empty') {
+									return _user$project$Dict_AVL$NeedRebalance(_p49);
+								} else {
+									var _p46 = _user$project$Dict_AVL$removeSmallest(_p51);
+									var nKey = _p46._0._0;
+									var nVal = _p46._0._1;
+									var nRight = _p46._1;
+									return _user$project$Dict_AVL$NeedRebalance(
+										_user$project$Dict_AVL$balance(
+											A4(_user$project$Dict_AVL$build, nKey, nVal, _p49, nRight)));
+								}
+							}
+						} else {
+							return _user$project$Dict_AVL$NoNeed(
+								A5(_user$project$Dict_AVL$Node, _p50, _p48, _p44._0, _p49, _p51));
+						}
+					default:
+						var _p47 = up(_p51);
+						if (_p47.ctor === 'NoNeed') {
+							return _user$project$Dict_AVL$NoNeed(
+								A5(_user$project$Dict_AVL$Node, _p50, _p48, _p52, _p49, _p47._0));
+						} else {
+							return _user$project$Dict_AVL$NeedRebalance(
+								_user$project$Dict_AVL$balance(
+									A4(_user$project$Dict_AVL$build, _p48, _p52, _p49, _p47._0)));
+						}
+				}
+			}
+		};
+		var _p53 = up(dict);
+		if (_p53.ctor === 'NoNeed') {
+			return _p53._0;
+		} else {
+			return _p53._0;
 		}
 	});
 var _user$project$Dict_AVL$insert = F3(
@@ -16370,6 +16359,131 @@ var _user$project$Serial_Enumeration$main = _BrianHicks$elm_benchmark$Benchmark_
 				}
 			})))();
 
+var _user$project$Serial_Modification$forValues = F3(
+	function (name, size, keyer) {
+		var keys = A2(
+			_elm_lang$core$List$map,
+			keyer,
+			A2(_elm_lang$core$List$range, 1, size));
+		var source = A2(
+			_elm_lang$core$List$map,
+			function (key) {
+				return {ctor: '_Tuple2', _0: key, _1: 1};
+			},
+			keys);
+		return A3(
+			_BrianHicks$elm_benchmark$Benchmark$compare,
+			name,
+			A4(
+				_BrianHicks$elm_benchmark$Benchmark$benchmark2,
+				'Dict',
+				_elm_lang$core$List$foldl(
+					A2(
+						_elm_lang$core$Basics$flip,
+						_elm_lang$core$Dict$update,
+						_elm_lang$core$Basics$always(
+							_elm_lang$core$Maybe$Just(2)))),
+				_elm_lang$core$Dict$fromList(source),
+				keys),
+			A4(
+				_BrianHicks$elm_benchmark$Benchmark$benchmark2,
+				'Dict.AVL',
+				_elm_lang$core$List$foldl(
+					A2(
+						_elm_lang$core$Basics$flip,
+						_user$project$Dict_AVL$update,
+						_elm_lang$core$Basics$always(
+							_elm_lang$core$Maybe$Just(2)))),
+				_user$project$Dict_AVL$fromList(source),
+				keys));
+	});
+var _user$project$Serial_Modification$suiteOfSize = function (size) {
+	return A2(
+		_BrianHicks$elm_benchmark$Benchmark$describe,
+		_elm_lang$core$Basics$toString(size),
+		{
+			ctor: '::',
+			_0: A3(_user$project$Serial_Modification$forValues, 'string', size, _elm_lang$core$Basics$toString),
+			_1: {
+				ctor: '::',
+				_0: A3(_user$project$Serial_Modification$forValues, 'int', size, _elm_lang$core$Basics$identity),
+				_1: {
+					ctor: '::',
+					_0: A3(_user$project$Serial_Modification$forValues, 'float', size, _elm_lang$core$Basics$toFloat),
+					_1: {
+						ctor: '::',
+						_0: A3(
+							_user$project$Serial_Modification$forValues,
+							'time',
+							size,
+							function (_p0) {
+								return A2(
+									F2(
+										function (x, y) {
+											return x * y;
+										}),
+									_elm_lang$core$Time$millisecond,
+									_elm_lang$core$Basics$toFloat(_p0));
+							}),
+						_1: {
+							ctor: '::',
+							_0: A3(_user$project$Serial_Modification$forValues, 'char', size, _elm_lang$core$Char$fromCode),
+							_1: {
+								ctor: '::',
+								_0: A3(
+									_user$project$Serial_Modification$forValues,
+									'tuple of int',
+									size,
+									function (i) {
+										return {ctor: '_Tuple2', _0: i, _1: i};
+									}),
+								_1: {
+									ctor: '::',
+									_0: A3(
+										_user$project$Serial_Modification$forValues,
+										'list of int',
+										size,
+										function (i) {
+											return {
+												ctor: '::',
+												_0: i,
+												_1: {ctor: '[]'}
+											};
+										}),
+									_1: {ctor: '[]'}
+								}
+							}
+						}
+					}
+				}
+			}
+		});
+};
+var _user$project$Serial_Modification$main = _BrianHicks$elm_benchmark$Benchmark_Runner$program(
+	A2(
+		_BrianHicks$elm_benchmark$Benchmark$describe,
+		'modification',
+		A2(
+			_elm_lang$core$List$map,
+			_user$project$Serial_Modification$suiteOfSize,
+			{
+				ctor: '::',
+				_0: 1,
+				_1: {
+					ctor: '::',
+					_0: 10,
+					_1: {
+						ctor: '::',
+						_0: 100,
+						_1: {
+							ctor: '::',
+							_0: 1000,
+							_1: {ctor: '[]'}
+						}
+					}
+				}
+			})))();
+
 var _user$project$Shuffle$helper = function (_p0) {
 	var _p1 = _p0;
 	var _p2 = _p1._1;
@@ -16641,7 +16755,11 @@ var _user$project$Main$allBenches = function () {
 							_1: {
 								ctor: '::',
 								_0: {ctor: '_Tuple2', _0: 'serial enumeration', _1: _user$project$Serial_Enumeration$suiteOfSize},
-								_1: {ctor: '[]'}
+								_1: {
+									ctor: '::',
+									_0: {ctor: '_Tuple2', _0: 'serial modification', _1: _user$project$Serial_Modification$suiteOfSize},
+									_1: {ctor: '[]'}
+								}
 							}
 						}
 					}
