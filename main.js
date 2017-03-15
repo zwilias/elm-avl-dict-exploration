@@ -14107,24 +14107,35 @@ var _user$project$Dict_AVL$heightDiff = function (dict) {
 		return _user$project$Dict_AVL$height(_p1._4) - _user$project$Dict_AVL$height(_p1._3);
 	}
 };
+var _user$project$Dict_AVL$isValidAvl = function (tree) {
+	var _p2 = tree;
+	if (_p2.ctor === 'Empty') {
+		return true;
+	} else {
+		return (_elm_lang$core$Native_Utils.cmp(
+			_elm_lang$core$Basics$abs(
+				_user$project$Dict_AVL$heightDiff(tree)),
+			1) < 1) && (_user$project$Dict_AVL$isValidAvl(_p2._3) && _user$project$Dict_AVL$isValidAvl(_p2._4));
+	}
+};
 var _user$project$Dict_AVL$foldr = F3(
 	function (op, acc, dict) {
 		foldr:
 		while (true) {
-			var _p2 = dict;
-			if (_p2.ctor === 'Empty') {
+			var _p3 = dict;
+			if (_p3.ctor === 'Empty') {
 				return acc;
 			} else {
-				var _v3 = op,
-					_v4 = A3(
+				var _v4 = op,
+					_v5 = A3(
 					op,
-					_p2._1,
-					_p2._2,
-					A3(_user$project$Dict_AVL$foldr, op, acc, _p2._4)),
-					_v5 = _p2._3;
-				op = _v3;
-				acc = _v4;
-				dict = _v5;
+					_p3._1,
+					_p3._2,
+					A3(_user$project$Dict_AVL$foldr, op, acc, _p3._4)),
+					_v6 = _p3._3;
+				op = _v4;
+				acc = _v5;
+				dict = _v6;
 				continue foldr;
 			}
 		}
@@ -14133,7 +14144,7 @@ var _user$project$Dict_AVL$keys = function (dict) {
 	return A3(
 		_user$project$Dict_AVL$foldr,
 		F3(
-			function (key, _p3, keyList) {
+			function (key, _p4, keyList) {
 				return {ctor: '::', _0: key, _1: keyList};
 			}),
 		{ctor: '[]'},
@@ -14168,75 +14179,111 @@ var _user$project$Dict_AVL$foldl = F3(
 	function (op, acc, dict) {
 		foldl:
 		while (true) {
-			var _p4 = dict;
-			if (_p4.ctor === 'Empty') {
+			var _p5 = dict;
+			if (_p5.ctor === 'Empty') {
 				return acc;
 			} else {
-				var _v7 = op,
-					_v8 = A3(
+				var _v8 = op,
+					_v9 = A3(
 					op,
-					_p4._1,
-					_p4._2,
-					A3(_user$project$Dict_AVL$foldl, op, acc, _p4._3)),
-					_v9 = _p4._4;
-				op = _v7;
-				acc = _v8;
-				dict = _v9;
+					_p5._1,
+					_p5._2,
+					A3(_user$project$Dict_AVL$foldl, op, acc, _p5._3)),
+					_v10 = _p5._4;
+				op = _v8;
+				acc = _v9;
+				dict = _v10;
 				continue foldl;
 			}
 		}
 	});
+var _user$project$Dict_AVL$all = F2(
+	function (predicate, dict) {
+		return _elm_lang$core$Native_Utils.eq(
+			A3(
+				_user$project$Dict_AVL$foldl,
+				F3(
+					function (k, v, c) {
+						return c && A2(predicate, k, v);
+					}),
+				true,
+				dict),
+			true);
+	});
+var _user$project$Dict_AVL$isValidBst = function (dict) {
+	var _p6 = dict;
+	if (_p6.ctor === 'Empty') {
+		return true;
+	} else {
+		var _p11 = _p6._4;
+		var _p10 = _p6._3;
+		var _p9 = _p6._1;
+		return A2(
+			_user$project$Dict_AVL$all,
+			F2(
+				function (k, _p7) {
+					return _elm_lang$core$Native_Utils.cmp(k, _p9) < 0;
+				}),
+			_p10) && (A2(
+			_user$project$Dict_AVL$all,
+			F2(
+				function (k, _p8) {
+					return _elm_lang$core$Native_Utils.cmp(k, _p9) > 0;
+				}),
+			_p11) && (_user$project$Dict_AVL$isValidBst(_p10) && _user$project$Dict_AVL$isValidBst(_p11)));
+	}
+};
 var _user$project$Dict_AVL$merge = F6(
 	function (leftStep, bothStep, rightStep, leftDict, rightDict, initialResult) {
 		var stepState = F3(
-			function (rKey, rValue, _p5) {
+			function (rKey, rValue, _p12) {
 				stepState:
 				while (true) {
-					var _p6 = _p5;
-					var _p12 = _p6._1;
-					var _p11 = _p6._0;
-					var _p7 = _p11;
-					if (_p7.ctor === '[]') {
+					var _p13 = _p12;
+					var _p19 = _p13._1;
+					var _p18 = _p13._0;
+					var _p14 = _p18;
+					if (_p14.ctor === '[]') {
 						return {
 							ctor: '_Tuple2',
-							_0: _p11,
-							_1: A3(rightStep, rKey, rValue, _p12)
+							_0: _p18,
+							_1: A3(rightStep, rKey, rValue, _p19)
 						};
 					} else {
-						var _p10 = _p7._1;
-						var _p9 = _p7._0._1;
-						var _p8 = _p7._0._0;
-						if (_elm_lang$core$Native_Utils.cmp(_p8, rKey) < 0) {
-							var _v12 = rKey,
-								_v13 = rValue,
-								_v14 = {
+						var _p17 = _p14._1;
+						var _p16 = _p14._0._1;
+						var _p15 = _p14._0._0;
+						if (_elm_lang$core$Native_Utils.cmp(_p15, rKey) < 0) {
+							var _v14 = rKey,
+								_v15 = rValue,
+								_v16 = {
 								ctor: '_Tuple2',
-								_0: _p10,
-								_1: A3(leftStep, _p8, _p9, _p12)
+								_0: _p17,
+								_1: A3(leftStep, _p15, _p16, _p19)
 							};
-							rKey = _v12;
-							rValue = _v13;
-							_p5 = _v14;
+							rKey = _v14;
+							rValue = _v15;
+							_p12 = _v16;
 							continue stepState;
 						} else {
-							if (_elm_lang$core$Native_Utils.cmp(_p8, rKey) > 0) {
+							if (_elm_lang$core$Native_Utils.cmp(_p15, rKey) > 0) {
 								return {
 									ctor: '_Tuple2',
-									_0: _p11,
-									_1: A3(rightStep, rKey, rValue, _p12)
+									_0: _p18,
+									_1: A3(rightStep, rKey, rValue, _p19)
 								};
 							} else {
 								return {
 									ctor: '_Tuple2',
-									_0: _p10,
-									_1: A4(bothStep, _p8, _p9, rValue, _p12)
+									_0: _p17,
+									_1: A4(bothStep, _p15, _p16, rValue, _p19)
 								};
 							}
 						}
 					}
 				}
 			});
-		var _p13 = A3(
+		var _p20 = A3(
 			_user$project$Dict_AVL$foldl,
 			stepState,
 			{
@@ -14245,14 +14292,14 @@ var _user$project$Dict_AVL$merge = F6(
 				_1: initialResult
 			},
 			rightDict);
-		var leftovers = _p13._0;
-		var intermediateResult = _p13._1;
+		var leftovers = _p20._0;
+		var intermediateResult = _p20._1;
 		return A3(
 			_elm_lang$core$List$foldl,
 			F2(
-				function (_p14, result) {
-					var _p15 = _p14;
-					return A3(leftStep, _p15._0, _p15._1, result);
+				function (_p21, result) {
+					var _p22 = _p21;
+					return A3(leftStep, _p22._0, _p22._1, result);
 				}),
 			intermediateResult,
 			leftovers);
@@ -14261,7 +14308,7 @@ var _user$project$Dict_AVL$size = function (dict) {
 	return A3(
 		_user$project$Dict_AVL$foldl,
 		F3(
-			function (_p17, _p16, acc) {
+			function (_p24, _p23, acc) {
 				return acc + 1;
 			}),
 		0,
@@ -14277,25 +14324,25 @@ var _user$project$Dict_AVL$get = F2(
 	function (key, dict) {
 		get:
 		while (true) {
-			var _p18 = dict;
-			if (_p18.ctor === 'Empty') {
+			var _p25 = dict;
+			if (_p25.ctor === 'Empty') {
 				return _elm_lang$core$Maybe$Nothing;
 			} else {
-				var _p19 = A2(_elm_lang$core$Basics$compare, key, _p18._1);
-				switch (_p19.ctor) {
+				var _p26 = A2(_elm_lang$core$Basics$compare, key, _p25._1);
+				switch (_p26.ctor) {
 					case 'EQ':
-						return _elm_lang$core$Maybe$Just(_p18._2);
+						return _elm_lang$core$Maybe$Just(_p25._2);
 					case 'LT':
-						var _v18 = key,
-							_v19 = _p18._3;
-						key = _v18;
-						dict = _v19;
-						continue get;
-					default:
 						var _v20 = key,
-							_v21 = _p18._4;
+							_v21 = _p25._3;
 						key = _v20;
 						dict = _v21;
+						continue get;
+					default:
+						var _v22 = key,
+							_v23 = _p25._4;
+						key = _v22;
+						dict = _v23;
 						continue get;
 				}
 			}
@@ -14325,62 +14372,123 @@ var _user$project$Dict_AVL$build = F4(
 			right);
 	});
 var _user$project$Dict_AVL$rotateLeft = function (dict) {
-	var _p20 = dict;
-	if ((_p20.ctor === 'Node') && (_p20._4.ctor === 'Node')) {
+	var _p27 = dict;
+	if ((_p27.ctor === 'Node') && (_p27._4.ctor === 'Node')) {
 		return A4(
 			_user$project$Dict_AVL$build,
-			_p20._4._1,
-			_p20._4._2,
-			A4(_user$project$Dict_AVL$build, _p20._1, _p20._2, _p20._3, _p20._4._3),
-			_p20._4._4);
+			_p27._4._1,
+			_p27._4._2,
+			A4(_user$project$Dict_AVL$build, _p27._1, _p27._2, _p27._3, _p27._4._3),
+			_p27._4._4);
 	} else {
 		return dict;
 	}
 };
 var _user$project$Dict_AVL$rotateRight = function (dict) {
-	var _p21 = dict;
-	if ((_p21.ctor === 'Node') && (_p21._3.ctor === 'Node')) {
+	var _p28 = dict;
+	if ((_p28.ctor === 'Node') && (_p28._3.ctor === 'Node')) {
 		return A4(
 			_user$project$Dict_AVL$build,
-			_p21._3._1,
-			_p21._3._2,
-			_p21._3._3,
-			A4(_user$project$Dict_AVL$build, _p21._1, _p21._2, _p21._3._4, _p21._4));
+			_p28._3._1,
+			_p28._3._2,
+			_p28._3._3,
+			A4(_user$project$Dict_AVL$build, _p28._1, _p28._2, _p28._3._4, _p28._4));
 	} else {
 		return dict;
 	}
 };
 var _user$project$Dict_AVL$balance = function (dict) {
-	var _p22 = dict;
-	if (_p22.ctor === 'Empty') {
+	var _p29 = dict;
+	if (_p29.ctor === 'Empty') {
 		return dict;
 	} else {
-		var _p27 = _p22._2;
-		var _p26 = _p22._4;
-		var _p25 = _p22._0;
-		var _p24 = _p22._3;
-		var _p23 = _p22._1;
-		var setDiff = _user$project$Dict_AVL$heightDiff(dict);
-		return _elm_lang$core$Native_Utils.eq(setDiff, -2) ? (_elm_lang$core$Native_Utils.eq(
-			_user$project$Dict_AVL$heightDiff(_p24),
-			1) ? _user$project$Dict_AVL$rotateRight(
-			A5(
-				_user$project$Dict_AVL$Node,
-				_p25,
-				_p23,
-				_p27,
-				_user$project$Dict_AVL$rotateLeft(_p24),
-				_p26)) : _user$project$Dict_AVL$rotateRight(dict)) : (_elm_lang$core$Native_Utils.eq(setDiff, 2) ? (_elm_lang$core$Native_Utils.eq(
-			_user$project$Dict_AVL$heightDiff(_p26),
-			-1) ? _user$project$Dict_AVL$rotateLeft(
-			A5(
-				_user$project$Dict_AVL$Node,
-				_p25,
-				_p23,
-				_p27,
-				_p24,
-				_user$project$Dict_AVL$rotateRight(_p26))) : _user$project$Dict_AVL$rotateLeft(dict)) : dict);
+		var _p35 = _p29._2;
+		var _p34 = _p29._4;
+		var _p33 = _p29._0;
+		var _p32 = _p29._3;
+		var _p31 = _p29._1;
+		var _p30 = _user$project$Dict_AVL$heightDiff(dict);
+		switch (_p30) {
+			case -2:
+				return _elm_lang$core$Native_Utils.eq(
+					_user$project$Dict_AVL$heightDiff(_p32),
+					1) ? _user$project$Dict_AVL$rotateRight(
+					A5(
+						_user$project$Dict_AVL$Node,
+						_p33,
+						_p31,
+						_p35,
+						_user$project$Dict_AVL$rotateLeft(_p32),
+						_p34)) : _user$project$Dict_AVL$rotateRight(dict);
+			case 2:
+				return _elm_lang$core$Native_Utils.eq(
+					_user$project$Dict_AVL$heightDiff(_p34),
+					-1) ? _user$project$Dict_AVL$rotateLeft(
+					A5(
+						_user$project$Dict_AVL$Node,
+						_p33,
+						_p31,
+						_p35,
+						_p32,
+						_user$project$Dict_AVL$rotateRight(_p34))) : _user$project$Dict_AVL$rotateLeft(dict);
+			default:
+				return dict;
+		}
 	}
+};
+var _user$project$Dict_AVL$removeSmallest = function (subTree) {
+	var doRemove = function (fromDict) {
+		var _p36 = fromDict;
+		if (_p36.ctor === 'Node') {
+			if (_p36._3.ctor === 'Empty') {
+				return _p36._4;
+			} else {
+				return _user$project$Dict_AVL$balance(
+					A4(
+						_user$project$Dict_AVL$build,
+						_p36._1,
+						_p36._2,
+						doRemove(_p36._3),
+						_p36._4));
+			}
+		} else {
+			return _elm_lang$core$Native_Utils.crashCase(
+				'Dict.AVL',
+				{
+					start: {line: 276, column: 13},
+					end: {line: 284, column: 46}
+				},
+				_p36)('unreachable');
+		}
+	};
+	var getSmallest = function (inDict) {
+		getSmallest:
+		while (true) {
+			var _p38 = inDict;
+			if (_p38.ctor === 'Node') {
+				if (_p38._3.ctor === 'Empty') {
+					return {ctor: '_Tuple2', _0: _p38._1, _1: _p38._2};
+				} else {
+					var _v30 = _p38._3;
+					inDict = _v30;
+					continue getSmallest;
+				}
+			} else {
+				return _elm_lang$core$Native_Utils.crashCase(
+					'Dict.AVL',
+					{
+						start: {line: 264, column: 13},
+						end: {line: 272, column: 46}
+					},
+					_p38)('unreachable');
+			}
+		}
+	};
+	return {
+		ctor: '_Tuple2',
+		_0: getSmallest(subTree),
+		_1: doRemove(subTree)
+	};
 };
 var _user$project$Dict_AVL$Empty = {ctor: 'Empty'};
 var _user$project$Dict_AVL$empty = _user$project$Dict_AVL$Empty;
@@ -14400,121 +14508,84 @@ var _user$project$Dict_AVL$NeedRebalance = function (a) {
 };
 var _user$project$Dict_AVL$update = F3(
 	function (key, alter, dict) {
-		var getSmallest = function (dict) {
-			getSmallest:
-			while (true) {
-				var _p28 = dict;
-				if (_p28.ctor === 'Empty') {
-					return _elm_lang$core$Native_Utils.crashCase(
-						'Dict.AVL',
-						{
-							start: {line: 189, column: 13},
-							end: {line: 197, column: 37}
-						},
-						_p28)('can\'t');
-				} else {
-					if (_p28._3.ctor === 'Empty') {
-						return {ctor: '_Tuple2', _0: _p28._1, _1: _p28._2};
-					} else {
-						var _v26 = _p28._3;
-						dict = _v26;
-						continue getSmallest;
-					}
-				}
-			}
-		};
 		var up = F3(
 			function (key, alter, dict) {
-				var _p30 = dict;
-				if (_p30.ctor === 'Empty') {
-					var _p31 = alter(_elm_lang$core$Maybe$Nothing);
-					if (_p31.ctor === 'Nothing') {
+				var _p40 = dict;
+				if (_p40.ctor === 'Empty') {
+					var _p41 = alter(_elm_lang$core$Maybe$Nothing);
+					if (_p41.ctor === 'Nothing') {
 						return _user$project$Dict_AVL$NoOp;
 					} else {
 						return _user$project$Dict_AVL$NeedRebalance(
-							A2(_user$project$Dict_AVL$singleton, key, _p31._0));
+							A2(_user$project$Dict_AVL$singleton, key, _p41._0));
 					}
 				} else {
-					var _p44 = _p30._2;
-					var _p43 = _p30._4;
-					var _p42 = _p30._0;
-					var _p41 = _p30._3;
-					var _p40 = _p30._1;
-					var _p32 = A2(_elm_lang$core$Basics$compare, key, _p40);
-					switch (_p32.ctor) {
+					var _p52 = _p40._2;
+					var _p51 = _p40._4;
+					var _p50 = _p40._0;
+					var _p49 = _p40._3;
+					var _p48 = _p40._1;
+					var _p42 = A2(_elm_lang$core$Basics$compare, key, _p48);
+					switch (_p42.ctor) {
 						case 'LT':
-							var _p33 = A3(up, key, alter, _p41);
-							switch (_p33.ctor) {
+							var _p43 = A3(up, key, alter, _p49);
+							switch (_p43.ctor) {
 								case 'NoNeed':
 									return _user$project$Dict_AVL$NoNeed(
-										A5(_user$project$Dict_AVL$Node, _p42, _p40, _p44, _p33._0, _p43));
+										A5(_user$project$Dict_AVL$Node, _p50, _p48, _p52, _p43._0, _p51));
 								case 'NeedRebalance':
 									return _user$project$Dict_AVL$NeedRebalance(
 										_user$project$Dict_AVL$balance(
-											A4(_user$project$Dict_AVL$build, _p40, _p44, _p33._0, _p43)));
+											A4(_user$project$Dict_AVL$build, _p48, _p52, _p43._0, _p51)));
 								default:
 									return _user$project$Dict_AVL$NoOp;
 							}
 						case 'EQ':
-							var _p34 = alter(
-								_elm_lang$core$Maybe$Just(_p44));
-							if (_p34.ctor === 'Nothing') {
-								var _p35 = {ctor: '_Tuple2', _0: _p41, _1: _p43};
-								if (_p35._0.ctor === 'Empty') {
-									return _user$project$Dict_AVL$NeedRebalance(_p43);
+							var _p44 = alter(
+								_elm_lang$core$Maybe$Just(_p52));
+							if (_p44.ctor === 'Nothing') {
+								var _p45 = {ctor: '_Tuple2', _0: _p49, _1: _p51};
+								if (_p45._0.ctor === 'Empty') {
+									return _user$project$Dict_AVL$NeedRebalance(_p51);
 								} else {
-									if (_p35._1.ctor === 'Empty') {
-										return _user$project$Dict_AVL$NeedRebalance(_p41);
+									if (_p45._1.ctor === 'Empty') {
+										return _user$project$Dict_AVL$NeedRebalance(_p49);
 									} else {
-										var _p36 = getSmallest(_p43);
-										var skey = _p36._0;
-										var sval = _p36._1;
-										var removeNext = A3(
-											up,
-											skey,
-											_elm_lang$core$Basics$always(_elm_lang$core$Maybe$Nothing),
-											_p43);
-										var _p37 = removeNext;
-										switch (_p37.ctor) {
-											case 'NoNeed':
-												return _user$project$Dict_AVL$NoNeed(
-													A4(_user$project$Dict_AVL$build, skey, sval, _p41, _p37._0));
-											case 'NeedRebalance':
-												return _user$project$Dict_AVL$NeedRebalance(
-													_user$project$Dict_AVL$balance(
-														A4(_user$project$Dict_AVL$build, skey, sval, _p41, _p37._0)));
-											default:
-												return _user$project$Dict_AVL$NoOp;
-										}
+										var _p46 = _user$project$Dict_AVL$removeSmallest(_p51);
+										var nKey = _p46._0._0;
+										var nVal = _p46._0._1;
+										var nRight = _p46._1;
+										return _user$project$Dict_AVL$NeedRebalance(
+											_user$project$Dict_AVL$balance(
+												A4(_user$project$Dict_AVL$build, nKey, nVal, _p49, nRight)));
 									}
 								}
 							} else {
-								var _p38 = _p34._0;
-								return _elm_lang$core$Native_Utils.eq(_p38, _p44) ? _user$project$Dict_AVL$NoOp : _user$project$Dict_AVL$NoNeed(
-									A5(_user$project$Dict_AVL$Node, _p42, key, _p38, _p41, _p43));
+								return _user$project$Dict_AVL$NoNeed(
+									A5(_user$project$Dict_AVL$Node, _p50, key, _p44._0, _p49, _p51));
 							}
 						default:
-							var _p39 = A3(up, key, alter, _p43);
-							switch (_p39.ctor) {
+							var _p47 = A3(up, key, alter, _p51);
+							switch (_p47.ctor) {
 								case 'NoNeed':
 									return _user$project$Dict_AVL$NoNeed(
-										A5(_user$project$Dict_AVL$Node, _p42, _p40, _p44, _p41, _p39._0));
+										A5(_user$project$Dict_AVL$Node, _p50, _p48, _p52, _p49, _p47._0));
 								case 'NeedRebalance':
 									return _user$project$Dict_AVL$NeedRebalance(
 										_user$project$Dict_AVL$balance(
-											A4(_user$project$Dict_AVL$build, _p40, _p44, _p41, _p39._0)));
+											A4(_user$project$Dict_AVL$build, _p48, _p52, _p49, _p47._0)));
 								default:
 									return _user$project$Dict_AVL$NoOp;
 							}
 					}
 				}
 			});
-		var _p45 = A3(up, key, alter, dict);
-		switch (_p45.ctor) {
+		var _p53 = A3(up, key, alter, dict);
+		switch (_p53.ctor) {
 			case 'NoNeed':
-				return _p45._0;
+				return _p53._0;
 			case 'NeedRebalance':
-				return _p45._0;
+				return _p53._0;
 			default:
 				return dict;
 		}
@@ -14524,7 +14595,7 @@ var _user$project$Dict_AVL$insert = F3(
 		return A3(
 			_user$project$Dict_AVL$update,
 			key,
-			function (_p46) {
+			function (_p54) {
 				return _elm_lang$core$Maybe$Just(value);
 			},
 			dict);
@@ -14560,7 +14631,7 @@ var _user$project$Dict_AVL$intersect = F2(
 		return A2(
 			_user$project$Dict_AVL$filter,
 			F2(
-				function (k, _p47) {
+				function (k, _p55) {
 					return A2(_user$project$Dict_AVL$member, k, t2);
 				}),
 			t1);
@@ -14570,7 +14641,7 @@ var _user$project$Dict_AVL$diff = F2(
 		return A2(
 			_user$project$Dict_AVL$filter,
 			F2(
-				function (k, _p48) {
+				function (k, _p56) {
 					return !A2(_user$project$Dict_AVL$member, k, t2);
 				}),
 			t1);
@@ -14591,7 +14662,7 @@ var _user$project$Dict_AVL$remove = F2(
 		return A3(
 			_user$project$Dict_AVL$update,
 			key,
-			function (_p49) {
+			function (_p57) {
 				return _elm_lang$core$Maybe$Nothing;
 			},
 			dict);
@@ -14600,13 +14671,13 @@ var _user$project$Dict_AVL$fromList = function (assocs) {
 	return A3(
 		_elm_lang$core$List$foldl,
 		F2(
-			function (_p50, dict) {
-				var _p51 = _p50;
+			function (_p58, dict) {
+				var _p59 = _p58;
 				return A3(
 					_user$project$Dict_AVL$update,
-					_p51._0,
-					function (_p52) {
-						return _elm_lang$core$Maybe$Just(_p51._1);
+					_p59._0,
+					function (_p60) {
+						return _elm_lang$core$Maybe$Just(_p59._1);
 					},
 					dict);
 			}),
