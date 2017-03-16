@@ -150,7 +150,7 @@ use it.
 -}
 eq : Dict comparable v -> Dict comparable v -> Bool
 eq left right =
-    (toList left) == (toList right)
+    toList left == toList right
 
 
 {-| Determine if a key is in a dictionary.
@@ -280,7 +280,7 @@ removeSmallest subTree =
                 Node _ _ _ Empty right ->
                     right
 
-                Node h k v left right ->
+                Node _ k v left right ->
                     balance (build k v (doRemove left) right)
 
                 Empty ->
@@ -310,7 +310,7 @@ update :
     -> (Maybe v -> Maybe v)
     -> Dict comparable v
     -> Dict comparable v
-update key alter dict =
+update key alter input =
     let
         up :
             Dict comparable v
@@ -378,12 +378,12 @@ update key alter dict =
                                     NeedRebalance
                                         (balance (build k v left newRight))
     in
-        case up dict of
-            NoNeed dict ->
-                dict
+        case up input of
+            NoNeed result ->
+                result
 
-            NeedRebalance dict ->
-                dict
+            NeedRebalance result ->
+                result
 
 
 {-| Create a dictionary with one key-value pair.
@@ -690,10 +690,9 @@ entire structure.
 build : k -> v -> Dict k v -> Dict k v -> Dict k v
 build key value left right =
     Node
-        ((max
+        (max
             (height left)
             (height right)
-         )
             + 1
         )
         key
@@ -713,8 +712,8 @@ height dict =
         Empty ->
             0
 
-        Node height _ _ _ _ ->
-            height
+        Node nodeHeight _ _ _ _ ->
+            nodeHeight
 
 
 {-| Rotate a tree to the left (for balancing).
