@@ -15455,6 +15455,22 @@ var _user$project$Dict_AVL$singleton = F2(
 	function (key, val) {
 		return A5(_user$project$Dict_AVL$Node, 1, key, val, _user$project$Dict_AVL$empty, _user$project$Dict_AVL$empty);
 	});
+var _user$project$Dict_AVL$map = F2(
+	function (f, tree) {
+		var _p40 = tree;
+		if (_p40.ctor === 'Empty') {
+			return _user$project$Dict_AVL$Empty;
+		} else {
+			var _p41 = _p40._1;
+			return A5(
+				_user$project$Dict_AVL$Node,
+				_p40._0,
+				_p41,
+				A2(f, _p41, _p40._2),
+				A2(_user$project$Dict_AVL$map, f, _p40._3),
+				A2(_user$project$Dict_AVL$map, f, _p40._4));
+		}
+	});
 var _user$project$Dict_AVL$NoNeed = function (a) {
 	return {ctor: 'NoNeed', _0: a};
 };
@@ -15464,75 +15480,75 @@ var _user$project$Dict_AVL$NeedRebalance = function (a) {
 var _user$project$Dict_AVL$update = F3(
 	function (key, alter, input) {
 		var up = function (dict) {
-			var _p40 = dict;
-			if (_p40.ctor === 'Empty') {
-				var _p41 = alter(_elm_lang$core$Maybe$Nothing);
-				if (_p41.ctor === 'Nothing') {
+			var _p42 = dict;
+			if (_p42.ctor === 'Empty') {
+				var _p43 = alter(_elm_lang$core$Maybe$Nothing);
+				if (_p43.ctor === 'Nothing') {
 					return _user$project$Dict_AVL$NoNeed(dict);
 				} else {
 					return _user$project$Dict_AVL$NeedRebalance(
-						A2(_user$project$Dict_AVL$singleton, key, _p41._0));
+						A2(_user$project$Dict_AVL$singleton, key, _p43._0));
 				}
 			} else {
-				var _p52 = _p40._2;
-				var _p51 = _p40._4;
-				var _p50 = _p40._0;
-				var _p49 = _p40._3;
-				var _p48 = _p40._1;
-				var _p42 = A2(_elm_lang$core$Basics$compare, key, _p48);
-				switch (_p42.ctor) {
+				var _p54 = _p42._2;
+				var _p53 = _p42._4;
+				var _p52 = _p42._0;
+				var _p51 = _p42._3;
+				var _p50 = _p42._1;
+				var _p44 = A2(_elm_lang$core$Basics$compare, key, _p50);
+				switch (_p44.ctor) {
 					case 'LT':
-						var _p43 = up(_p49);
-						if (_p43.ctor === 'NoNeed') {
+						var _p45 = up(_p51);
+						if (_p45.ctor === 'NoNeed') {
 							return _user$project$Dict_AVL$NoNeed(
-								A5(_user$project$Dict_AVL$Node, _p50, _p48, _p52, _p43._0, _p51));
+								A5(_user$project$Dict_AVL$Node, _p52, _p50, _p54, _p45._0, _p53));
 						} else {
 							return _user$project$Dict_AVL$NeedRebalance(
 								_user$project$Dict_AVL$balance(
-									A4(_user$project$Dict_AVL$build, _p48, _p52, _p43._0, _p51)));
+									A4(_user$project$Dict_AVL$build, _p50, _p54, _p45._0, _p53)));
 						}
 					case 'EQ':
-						var _p44 = alter(
-							_elm_lang$core$Maybe$Just(_p52));
-						if (_p44.ctor === 'Nothing') {
-							var _p45 = {ctor: '_Tuple2', _0: _p49, _1: _p51};
-							if (_p45._0.ctor === 'Empty') {
-								return _user$project$Dict_AVL$NeedRebalance(_p51);
+						var _p46 = alter(
+							_elm_lang$core$Maybe$Just(_p54));
+						if (_p46.ctor === 'Nothing') {
+							var _p47 = {ctor: '_Tuple2', _0: _p51, _1: _p53};
+							if (_p47._0.ctor === 'Empty') {
+								return _user$project$Dict_AVL$NeedRebalance(_p53);
 							} else {
-								if (_p45._1.ctor === 'Empty') {
-									return _user$project$Dict_AVL$NeedRebalance(_p49);
+								if (_p47._1.ctor === 'Empty') {
+									return _user$project$Dict_AVL$NeedRebalance(_p51);
 								} else {
-									var _p46 = _user$project$Dict_AVL$removeSmallest(_p51);
-									var nKey = _p46._0._0;
-									var nVal = _p46._0._1;
-									var nRight = _p46._1;
+									var _p48 = _user$project$Dict_AVL$removeSmallest(_p53);
+									var nKey = _p48._0._0;
+									var nVal = _p48._0._1;
+									var nRight = _p48._1;
 									return _user$project$Dict_AVL$NeedRebalance(
 										_user$project$Dict_AVL$balance(
-											A4(_user$project$Dict_AVL$build, nKey, nVal, _p49, nRight)));
+											A4(_user$project$Dict_AVL$build, nKey, nVal, _p51, nRight)));
 								}
 							}
 						} else {
 							return _user$project$Dict_AVL$NoNeed(
-								A5(_user$project$Dict_AVL$Node, _p50, _p48, _p44._0, _p49, _p51));
+								A5(_user$project$Dict_AVL$Node, _p52, _p50, _p46._0, _p51, _p53));
 						}
 					default:
-						var _p47 = up(_p51);
-						if (_p47.ctor === 'NoNeed') {
+						var _p49 = up(_p53);
+						if (_p49.ctor === 'NoNeed') {
 							return _user$project$Dict_AVL$NoNeed(
-								A5(_user$project$Dict_AVL$Node, _p50, _p48, _p52, _p49, _p47._0));
+								A5(_user$project$Dict_AVL$Node, _p52, _p50, _p54, _p51, _p49._0));
 						} else {
 							return _user$project$Dict_AVL$NeedRebalance(
 								_user$project$Dict_AVL$balance(
-									A4(_user$project$Dict_AVL$build, _p48, _p52, _p49, _p47._0)));
+									A4(_user$project$Dict_AVL$build, _p50, _p54, _p51, _p49._0)));
 						}
 				}
 			}
 		};
-		var _p53 = up(input);
-		if (_p53.ctor === 'NoNeed') {
-			return _p53._0;
+		var _p55 = up(input);
+		if (_p55.ctor === 'NoNeed') {
+			return _p55._0;
 		} else {
-			return _p53._0;
+			return _p55._0;
 		}
 	});
 var _user$project$Dict_AVL$insert = F3(
@@ -15540,7 +15556,7 @@ var _user$project$Dict_AVL$insert = F3(
 		return A3(
 			_user$project$Dict_AVL$update,
 			key,
-			function (_p54) {
+			function (_p56) {
 				return _elm_lang$core$Maybe$Just(value);
 			},
 			dict);
@@ -15549,19 +15565,6 @@ var _user$project$Dict_AVL$union = F2(
 	function (left, right) {
 		return A3(_user$project$Dict_AVL$foldl, _user$project$Dict_AVL$insert, right, left);
 	});
-var _user$project$Dict_AVL$map = function (f) {
-	return A2(
-		_user$project$Dict_AVL$foldl,
-		F3(
-			function (key, val, dict) {
-				return A3(
-					_user$project$Dict_AVL$insert,
-					key,
-					A2(f, key, val),
-					dict);
-			}),
-		_user$project$Dict_AVL$empty);
-};
 var _user$project$Dict_AVL$filter = function (predicate) {
 	return A2(
 		_user$project$Dict_AVL$foldl,
@@ -15576,7 +15579,7 @@ var _user$project$Dict_AVL$intersect = F2(
 		return A2(
 			_user$project$Dict_AVL$filter,
 			F2(
-				function (k, _p55) {
+				function (k, _p57) {
 					return A2(_user$project$Dict_AVL$member, k, t2);
 				}),
 			t1);
@@ -15586,7 +15589,7 @@ var _user$project$Dict_AVL$diff = F2(
 		return A2(
 			_user$project$Dict_AVL$filter,
 			F2(
-				function (k, _p56) {
+				function (k, _p58) {
 					return !A2(_user$project$Dict_AVL$member, k, t2);
 				}),
 			t1);
@@ -15607,7 +15610,7 @@ var _user$project$Dict_AVL$remove = F2(
 		return A3(
 			_user$project$Dict_AVL$update,
 			key,
-			function (_p57) {
+			function (_p59) {
 				return _elm_lang$core$Maybe$Nothing;
 			},
 			dict);
@@ -15616,13 +15619,13 @@ var _user$project$Dict_AVL$fromList = function (assocs) {
 	return A3(
 		_elm_lang$core$List$foldl,
 		F2(
-			function (_p58, dict) {
-				var _p59 = _p58;
+			function (_p60, dict) {
+				var _p61 = _p60;
 				return A3(
 					_user$project$Dict_AVL$update,
-					_p59._0,
-					function (_p60) {
-						return _elm_lang$core$Maybe$Just(_p59._1);
+					_p61._0,
+					function (_p62) {
+						return _elm_lang$core$Maybe$Just(_p61._1);
 					},
 					dict);
 			}),
