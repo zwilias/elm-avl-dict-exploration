@@ -528,10 +528,13 @@ merge leftStep bothStep rightStep leftDict rightDict initialResult =
     [ ( "key", "VALUE" ) ]
 -}
 map : (comparable -> a -> b) -> Dict comparable a -> Dict comparable b
-map f =
-    foldl
-        (\key val dict -> insert key (f key val) dict)
-        empty
+map f tree =
+    case tree of
+        Empty ->
+            Empty
+
+        Node height key value left right ->
+            Node height key (f key value) (map f left) (map f right)
 
 
 {-| Fold over the key-value pairs in a dictionary, in order from lowest
