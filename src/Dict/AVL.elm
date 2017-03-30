@@ -26,6 +26,7 @@ module Dict.AVL
         , eq
         , isValidAvl
         , isValidBst
+        , fromList2
         )
 
 {-| Dict.AVL is an alternative Dict implementation backed by an AVL tree rather
@@ -70,6 +71,39 @@ can be used to check the internal consistency of the AVL tree backing the Dict.
 These should *always* return True, which is what our test suite is testing.
 @docs isValidBst, isValidAvl
 
+
+# Other
+@docs fromList2
+-}
+
+{-
+   import Benchmark exposing (Benchmark, benchmark1, describe)
+   import Benchmark.Runner exposing (BenchmarkProgram, program)
+
+
+   listOfSize : Int -> (Int -> comparable) -> List ( comparable, () )
+   listOfSize n keyer =
+       List.range 1 n
+           -- |> List.reverse
+           |> List.map (keyer >> flip (,) ())
+
+
+   createCompare : Int -> Benchmark
+   createCompare size =
+       let
+           l =
+               listOfSize size (\x -> ( x, x ))
+       in
+           Benchmark.compare ("size " ++ (toString size))
+               (benchmark1 "foldl" fromList l)
+               (benchmark1 "rec split" fromList2 l)
+
+
+   main : BenchmarkProgram
+   main =
+       program <|
+           describe "fromlists" <|
+               List.map createCompare [ 1, 10, 100, 500, 1000, 10000 ]
 -}
 
 
@@ -575,6 +609,87 @@ foldr op acc dict =
             foldr op (op key val (foldr op acc right)) left
 
 
+foldr2 : (k -> v -> a -> a) -> a -> Dict k v -> a
+foldr2 op acc dict =
+    foldrHelper op acc dict None
+
+
+type Cont k v
+    = None
+    | Cont k v (Dict k v) (Cont k v)
+
+
+foldrHelper : (k -> v -> a -> a) -> a -> Dict k v -> Cont k v -> a
+foldrHelper op acc dict cont =
+    case dict of
+        Empty ->
+            case cont of
+                None ->
+                    acc
+
+                Cont key val next tail ->
+                    foldrHelper op (op key val acc) next tail
+
+        Node _ key val left right ->
+            foldrHelper
+                op
+                acc
+                right
+                (Cont key val left cont)
+
+
+foldr3 : (k -> v -> a -> a) -> a -> Dict k v -> a
+foldr3 op acc dict =
+    foldrHelper2 op acc dict []
+
+
+type Cont2 k v
+    = Cont2 k v (Dict k v)
+
+
+foldrHelper2 : (k -> v -> a -> a) -> a -> Dict k v -> List (Cont2 k v) -> a
+foldrHelper2 op acc dict cont =
+    case dict of
+        Empty ->
+            case cont of
+                [] ->
+                    acc
+
+                (Cont2 key val next) :: tail ->
+                    foldrHelper2 op (op key val acc) next tail
+
+        Node _ key val left right ->
+            foldrHelper2
+                op
+                acc
+                right
+                (Cont2 key val left :: cont)
+
+
+foldr4 : (k -> v -> a -> a) -> a -> Dict k v -> a
+foldr4 op acc dict =
+    foldrHelper3 op acc dict []
+
+
+foldrHelper3 : (k -> v -> a -> a) -> a -> Dict k v -> List ( k, v, Dict k v ) -> a
+foldrHelper3 op acc dict cont =
+    case dict of
+        Empty ->
+            case cont of
+                [] ->
+                    acc
+
+                ( key, val, next ) :: tail ->
+                    foldrHelper3 op (op key val acc) next tail
+
+        Node _ key val left right ->
+            foldrHelper3
+                op
+                acc
+                right
+                (( key, val, left ) :: cont)
+
+
 {-| Keep a key-value pair when it satisfies a predicate.
 
     >>> fromList [ ( 1, "first" ), ( 2, "second" ) ]
@@ -676,6 +791,70 @@ fromList assocs =
         (\( key, value ) dict -> update key (\_ -> Just value) dict)
         empty
         assocs
+
+
+fromList2 : List ( comparable, v ) -> Dict comparable v
+fromList2 list =
+    --    List.sortWith reversePairs list
+    List.sortBy Tuple.first list
+        |> List.reverse
+        |> uniqueReverseAndCount
+        |> uncurry fromSortedList
+
+
+reversePairs : ( comparable, a ) -> ( comparable, a ) -> Order
+reversePairs ( a, _ ) ( b, _ ) =
+    compare b a
+
+
+uniqueReverseAndCount : List ( a, b ) -> ( Int, List ( a, b ) )
+uniqueReverseAndCount list =
+    case list of
+        [] ->
+            ( 0, [] )
+
+        x :: xs ->
+            let
+                ( first, rest, count ) =
+                    List.foldl
+                        (\( ck, kv ) ( ( pk, pv ), res, count ) ->
+                            if (ck == pk) then
+                                ( ( pk, pv ), res, count )
+                            else
+                                ( ( ck, kv ), ( pk, pv ) :: res, count + 1 )
+                        )
+                        ( x, [], 1 )
+                        xs
+            in
+                ( count, first :: rest )
+
+
+fromSortedList : Int -> List ( comparable, v ) -> Dict comparable v
+fromSortedList size list =
+    if size == 0 then
+        empty
+    else
+        let
+            leftSize =
+                size // 2
+
+            left =
+                List.take leftSize list
+
+            rest =
+                List.drop leftSize list
+        in
+            case rest of
+                [] ->
+                    empty
+
+                ( k, v ) :: right ->
+                    Node
+                        ((logBase 2 (toFloat size) |> ceiling) + 1)
+                        k
+                        v
+                        (fromSortedList leftSize left)
+                        (fromSortedList (size - leftSize - 1) right)
 
 
 
